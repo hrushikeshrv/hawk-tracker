@@ -1,0 +1,46 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}Register | Hawk Tracker{% endblock %}
+{% block body %}
+    <div class="flexbox-column column-half center pad-30 mb-20 ajc" style="min-height: 60vh;">
+        {% if next %}
+            {% if request.user.is_authenticated %}
+                <p class="warning-message">You don't have access to this page from this account</p>
+            {% else %}
+                <p class="warning-message">Please log in to see this page</p>
+            {% endif %}
+        {% endif %}
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p class="error-message">{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p class="error-message">{{ error }}</p>
+            {% endfor %}
+        {% endif %}
+        <h1>Create an account</h1>
+        <form method="post" class="flexbox-column pad-20 mb-30 login-form" action="{% url 'users:register' %}" style="min-width: 300px;">
+            {% csrf_token %}
+            {{ form.username.label_tag }}
+            {{ form.username }}
+
+            {{ form.email.label_tag }}
+            {{ form.email }}
+
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+
+            <button type="submit" class="cta-button mt-20">Create Account</button>
+        </form>
+
+        <div class="mt-30 center flexbox-column ajc">
+            <span class="mb-5">Already have an account?</span>
+            <a href="{% url 'users:login' %}" class="a">Log In</a>
+        </div>
+    </div>
+{% endblock %}

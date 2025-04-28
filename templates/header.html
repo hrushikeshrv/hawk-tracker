@@ -1,0 +1,19 @@
+{% load static %}
+<header>
+    <nav class="flexbox-row jcsb aic no-pad-20">
+        <a href="{% url 'core:index' %}" class="flexbox-row ajc">
+            <span class="material-symbols-outlined" style="font-size:2rem;">raven</span>
+        </a>
+        <div class="flexbox-row ajc">
+            {% if request.user.is_authenticated %}
+                <form action="{% url 'users:logout' %}" method="POST">
+                    {% csrf_token %}
+                    <button class="nav-link" style="font-size: 1rem; cursor: pointer;">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'users:login' %}" class="nav-link">Log In</a>
+                <a href="{% url 'users:register' %}" class="nav-link">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>

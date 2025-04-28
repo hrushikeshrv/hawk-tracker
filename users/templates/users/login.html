@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}Login | Hawk Tracker{% endblock %}
+{% block body %}
+    <div class="flexbox-column column-half center pad-30 mb-20 ajc" style="min-height: 60vh;">
+        {% if next %}
+            {% if request.user.is_authenticated %}
+                <p class="warning-message">You don't have access to this page from this account</p>
+            {% else %}
+                <p class="warning-message">Please log in to see this page</p>
+            {% endif %}
+        {% endif %}
+        {% if form.errors %}
+            <p class="error-message">Your username or password did not match. Please try again</p>
+        {% endif %}
+        <h1>Log In to Hawk</h1>
+        <form method="post" class="flexbox-column pad-20 mb-30 login-form" action="{% url 'users:login' %}" style="min-width: 300px;">
+            {% csrf_token %}
+            {{ form.username.label_tag }}
+            {{ form.username }}
+
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            <button type="submit" class="cta-button mt-20">Log In</button>
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+
+        <div class="mt-30 center flexbox-column ajc">
+            <span class="mb-5">Don't have an account?</span>
+            <a href="{% url 'users:register' %}" class="a">Create an account</a>
+        </div>
+    </div>
+{% endblock %}

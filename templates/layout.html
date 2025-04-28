@@ -1,0 +1,64 @@
+{%  load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="language" content="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="rgb(165, 0, 0)">
+    <meta name="author" content="@hrushikeshrv">
+    <meta name="robots" content="index, follow">
+    {% block meta %}
+{#        <meta name="description" content="Ticket Khidakee is your go-to platform for booking tickets to events, shows, and more. Experience a seamless and hassle-free ticket booking process with us.">#}
+{#        <meta property="og:title" content="Book Tickets for Events, Plays, Sports & Nearby Shows | Ticket Khidakee">#}
+{#        <meta property="og:description" content="Ticket Khidakee is your go-to platform for booking tickets to events, shows, and more. Experience a seamless and hassle-free ticket booking process with us.">#}
+        <meta property="og:image" content="{% static 'media/logo.png' %}">
+{#        <meta property="og:type" content="website">#}
+        <meta property="og:url" content="{{ request.build_absolute_uri }}">
+        <meta property="og:site_name" content="Hawk Tracker">
+    {% endblock %}
+{#    <link rel="canonical" href="http://hawk.hrus.in">#}
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Poppins&family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                        'FILL' 0,
+                        'wght' 400,
+                        'GRAD' 0,
+                        'opsz' 24;
+            color: var(--font-color);
+        }
+    </style>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TGM5F6WJNV"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-TGM5F6WJNV');
+    </script>
+    {% block pre_stylesheet %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="icon" href="{% static 'media/favicon.png' %}" type="image/png">
+    {% block stylesheet %}{% endblock %}
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    {% block libraries %}{% endblock %}
+</head>
+<body>
+    {% include 'header.html' %}
+    <div style="display: none;">{% block hidden_data %}{% endblock %}</div>
+    {% block body %}{% endblock %}
+    {% include 'footer.html' %}
+    <script>tippy('[data-tippy-content]', {delay: 200})</script>
+    {% block javascript %}{% endblock %}
+</body>
+</html>
