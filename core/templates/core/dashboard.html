@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}Hawk Tracker{% endblock %}
+
+{% block body %}
+    <h1>Notifications</h1>
+    <div class="table-container">
+        <table id="notification-container">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Page</th>
+                    <th>Date</th>
+                    <th>Watchlist</th>
+                </tr>
+            </thead>
+            <tbody id="notification-list">
+            </tbody>
+        </table>
+    </div>
+
+    <span class="mbt-20"></span>
+
+    <h1 style="margin-bottom: 0;">Watchlists</h1>
+    <div id="watchlist-container" class="flexbox-row pad-10">
+        {% for watchlist in watchlists %}
+            <div class="watchlist-card-container pad-20 flexbox-column ajc column-third">
+                <div class="watchlist-card flexbox-column">
+                    {{ watchlist.name }}
+                </div>
+            </div>
+        {% empty %}
+            <span class="mbt-10">No watchlists yet. <a href="" class="a">Create a watchlist</a></span>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/notification-renderer.js' %}"></script>
+{% endblock %}

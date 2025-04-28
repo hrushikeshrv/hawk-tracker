@@ -5,7 +5,7 @@
 :root {
     --monospace-font: 'JetBrains Mono', monospace;
     --default-font: 'Poppins', sans-serif;
-    --decorative-font: 'Major Mono Display', sans-serif;
+    --decorative-font: 'Cal Sans', sans-serif;
     --decorative-mono: 'IBM Plex Mono', monospace;
 
 
@@ -664,9 +664,15 @@ html.light-theme .dark-theme-invert {
     base components
 */
 
+main {
+    max-width: 1000px;
+    padding-bottom: 30px;
+}
+
 h1 {
     font-size: 2rem;
     margin: 20px 0;
+    padding: 10px;
 }
 
 @media (max-width: 500px) {
@@ -678,7 +684,7 @@ h1 {
 h1, h2, h3 {
     font-weight: 600;
     font-family: var(--decorative-font);
-    text-transform: lowercase;
+    letter-spacing: 2px;
 }
 
 .decorative-heading {
@@ -700,12 +706,11 @@ p {
 table {
     width: 100%;
     border-collapse: collapse;
-    border: 2px solid var(--font-color);
     color: var(--font-color);
 }
 
 table th {
-    padding: 15px;
+    padding: 7px;
 }
 
 table td {
@@ -713,10 +718,10 @@ table td {
 }
 
 table thead {
-    font-family: var(--decorative-font);
-    text-transform: lowercase;
-    font-size: 1.2rem;
+    font-family: var(--monospace-font);
+    font-size: 1rem;
     font-weight: bolder;
+    border-bottom: 1px solid var(--font-color);
 }
 
 table thead tr {
@@ -726,14 +731,6 @@ table thead tr {
 tbody {
     font-family: var(--monospace-font);
     font-size: 1.2rem;
-}
-
-.mjxgui-demo-button {
-    cursor: pointer;
-}
-
-#mjxgui_editor_window {
-    z-index: 5;
 }
 
 .hidden {

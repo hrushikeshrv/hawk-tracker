@@ -28,4 +28,3 @@ class UserRegistrationView(View):
             return render(request, 'users/register.html', {
                 'form': form,
             })
-
