@@ -3,7 +3,11 @@
 {% block title %}Hawk Tracker{% endblock %}
 
 {% block body %}
-    <h1>Notifications</h1>
+    <div class="flexbox-row jcsb aic">
+        <h1>Notifications</h1>
+{#        Make a settings page or popup for users to manage their notification settings #}
+        <a href="" class="material-symbols-outlined button">tune</a>
+    </div>
     <div class="table-container">
         <table id="notification-container">
             <thead>
@@ -15,6 +19,9 @@
                 </tr>
             </thead>
             <tbody id="notification-list">
+                <tr>
+                    <td colspan="4" style="text-align: center; padding-top: 10px;">No notifications yet. <a href="" class="a">Create a watchlist</a></td>
+                </tr>
             </tbody>
         </table>
     </div>

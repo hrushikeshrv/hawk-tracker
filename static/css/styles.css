@@ -667,6 +667,7 @@ html.light-theme .dark-theme-invert {
 main {
     max-width: 1000px;
     padding-bottom: 30px;
+    min-height: 60svh;
 }
 
 h1 {
@@ -714,7 +715,7 @@ table th {
 }
 
 table td {
-    padding: 0;
+    padding: 2px;
 }
 
 table thead {
@@ -729,8 +730,8 @@ table thead tr {
 }
 
 tbody {
-    font-family: var(--monospace-font);
-    font-size: 1.2rem;
+    font-family: var(--default-font);
+    font-size: 1rem;
 }
 
 .hidden {
@@ -802,6 +803,17 @@ button#change-theme-button {
 .hide-scrollbar::-webkit-scrollbar { /* WebKit */
     width: 0;
     height: 0;
+}
+
+.button {
+    cursor: pointer;
+    transition: background-color ease 0.2s;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background-color: var(--background-dark-1);
 }
 
 /*
