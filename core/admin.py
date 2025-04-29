@@ -13,7 +13,7 @@ class CompanyAdmin(admin.ModelAdmin):
 class PageAdmin(admin.ModelAdmin):
     search_fields = ['name']
     autocomplete_fields = ['company']
-    list_display = ['name', 'url', 'company']
+    list_display = ['name', 'company', 'location', 'years_of_experience', 'level']
     list_filter = ['company']
 
 
