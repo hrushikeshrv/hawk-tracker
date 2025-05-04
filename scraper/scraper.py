@@ -1,3 +1,4 @@
+from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
@@ -39,6 +40,7 @@ def scrape_page(page: Page) -> list[Job]:
     soup = BeautifulSoup(request.content, 'html.parser')
     # Find all elements that match the selector
     elements = soup.select(page.selector)
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     for element in elements:
         title = element.get_text(strip=True)
@@ -47,18 +49,33 @@ def scrape_page(page: Page) -> list[Job]:
                 title=title,
                 company=page.company,
                 page=page,
-                last_seen='',
+                last_seen=timestamp,
                 job_id='',
             ))
     return results
 
 
-if __name__ == '__main__':
+def push_jobs(jobs: list[Job], timestamp: str) -> bool:
+    """
+    Push scraped jobs to the server
+    """
+    url = SERVER_URL + '/api/push/create'
+    request = requests.post(url, json={'time': timestamp, 'data': jobs})
+    return request.status_code == 200
+
+
+def main():
+    """
+    Get pages from the server, scrape pages, and push scraped job data back to the server
+    """
     pages = get_page_list()
+    results = []
     if pages:
-        for p in pages:
-            print(f"Scraping {p.name}")
-            res = scrape_page(p)
-            print(f'Found {len(res)} results')
-    else:
-        print("No pages to scrape")
+        for page in pages:
+            res = scrape_page(page)
+            results.extend(res)
+    push_jobs(results, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
+
+if __name__ == '__main__':
+    main()

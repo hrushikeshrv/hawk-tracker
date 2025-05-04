@@ -1,8 +1,12 @@
+"""
+Dataclasses emulating the DB schema on the server
+"""
 from dataclasses import dataclass
 
 
 @dataclass
 class Page:
+    """A Page object received from the server"""
     name: str
     company: str
     url: str
