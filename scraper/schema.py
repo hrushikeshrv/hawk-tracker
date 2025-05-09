@@ -21,3 +21,10 @@ class Job:
     page: Page
     last_seen: str
     job_id: str
+
+
+@dataclass
+class ScrapeError:
+    """An error encountered while scraping a page"""
+    page: Page
+    error: str

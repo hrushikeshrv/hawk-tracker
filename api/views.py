@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
-from api.serializers import PageSerializer
+from api.serializers import PageSerializer, PushSerializer
 from core.models import Page
 
 
@@ -21,8 +21,9 @@ class PageListView(APIView):
 
 class PushCreateView(APIView):
     def post(self, request):
-        serializer = PageSerializer(data=request.data)
+        # TODO: If required, add request origin verification here
+        serializer = PushSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

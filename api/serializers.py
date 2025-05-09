@@ -15,7 +15,7 @@ class PageSerializer(serializers.ModelSerializer):
 
 
 class PushSerializer(serializers.ModelSerializer):
-    company = serializers.StringRelatedField()
+    # company = serializers.StringRelatedField()
 
     class Meta:
         model = Push

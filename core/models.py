@@ -39,6 +39,9 @@ class Push(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     data = models.JSONField()
 
+    def __str__(self):
+        return f'Push at {self.time.strftime("%d %b, %Y, %I:%M:%S %p")}'
+
 
 class Page(models.Model):
     """A page on a company website that will be watched"""
