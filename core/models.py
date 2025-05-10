@@ -71,7 +71,7 @@ class Page(models.Model):
 class Watchlist(models.Model):
     """A list of pages to watch for a user"""
     name = models.CharField(max_length=64)
-    companies = models.ManyToManyField(Company, related_name='watchlists')
+    pages = models.ManyToManyField(Page, related_name='watchlists')
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='watchlists')
 
     def __str__(self):

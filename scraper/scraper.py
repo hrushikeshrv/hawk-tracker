@@ -19,6 +19,8 @@ def get_page_list() -> list[Page] | None:
             results.append(Page(
                 name=page['name'],
                 company=page['company'],
+                company_id=page['company_id'],
+                id=page['id'],
                 url=page['url'],
                 selector=page['selector'],
             ))
@@ -51,6 +53,7 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
             results.append(Job(
                 title=title,
                 company=page.company,
+                company_id=page.company_id,
                 page=page,
                 last_seen=timestamp,
                 job_id='',
@@ -72,7 +75,9 @@ def push_jobs(jobs: list[Job], errors: list[ScrapeError], timestamp: str) -> boo
         data['jobs'].append({
             'title': job.title,
             'company': job.company,
+            'company_id': job.company_id,
             'page': {
+                'id': job.page.id,
                 'name': job.page.name,
                 'company': job.page.company,
                 'url': job.page.url,

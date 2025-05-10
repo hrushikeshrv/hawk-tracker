@@ -9,7 +9,8 @@ class PageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         fields = [
-            'name', 'company', 'url', 'location', 'is_remote',
+            'id',
+            'name', 'company', 'company_id', 'url', 'location', 'is_remote',
             'years_of_experience', 'level', 'selector'
         ]
 

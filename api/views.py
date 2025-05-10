@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from api.serializers import PageSerializer, PushSerializer
 from core.models import Page
+from core.utils import create_jobs_and_notify
 
 
 def test_view(request, *args, **kwargs):
@@ -24,6 +25,7 @@ class PushCreateView(APIView):
         # TODO: If required, add request origin verification here
         serializer = PushSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            push = serializer.save()
+            create_jobs_and_notify(serializer.data['jobs'], push.id)
             return Response({}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

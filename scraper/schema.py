@@ -7,8 +7,10 @@ from dataclasses import dataclass
 @dataclass
 class Page:
     """A Page object received from the server"""
+    id: int
     name: str
     company: str
+    company_id: int
     url: str
     selector: str
 
@@ -18,6 +20,7 @@ class Job:
     """A job posting found on a page"""
     title: str
     company: str
+    company_id: int
     page: Page
     last_seen: str
     job_id: str
