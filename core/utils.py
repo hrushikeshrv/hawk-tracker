@@ -1,4 +1,7 @@
+from django.core.mail import send_mail
 from django.db.models import Q
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from core.models import Job, Page, Watchlist
 from users.models import User
@@ -9,6 +12,7 @@ def create_jobs_and_notify(jobs, push_id):
     Bulk create jobs returned by the push from Lambda,
     figure out which jobs are new, and notify users watching those jobs
     TODO: Turn this into a celery task and run asynchronously
+    ! This is going to be a long running function with lots of unoptimized queries
     """
     # Figure out which jobs are new
     job_tuples = set((job['title'], job['company']) for job in jobs)
@@ -29,19 +33,36 @@ def create_jobs_and_notify(jobs, push_id):
             job_id=job.get('job_id', ''),
         ) for job in jobs if (job['title'], job['company']) not in existing_jobs
     ]
-    Job.objects.bulk_create(new_jobs)
+    new_jobs = Job.objects.bulk_create(new_jobs)
 
     print(f'Found {len(new_jobs)} new jobs')
     print(new_jobs)
 
-    # Find associated pages and watchlists
-    updated_page_urls = [job['page']['url'] for job in new_jobs]
-    updated_pages = Page.objects.filter(url__in=updated_page_urls).values_list('id', flat=True)
-    updated_watchlists = Watchlist.objects.filter(page__id__in=updated_pages).distinct().values_list('id', flat=True)
-    users_to_notify = User.objects.filter(watchlist__id__in=updated_watchlists).distinct()
+    # A dictionary mapping a user's email to a list of new jobs
+    notification_data = {}
+    # For each new job, find the users who are watching the page.
+    # There must be a better way to do this using joins
+    for job in new_jobs:
+        watchlists = job.page.watchlists.all().select_related('user')
+        for watchlist in watchlists:
+            if watchlist.user.pk not in notification_data:
+                notification_data[watchlist.user.pk] = (watchlist.user, [])
+            notification_data[watchlist.user.pk][1].append(job)
+
+    notify_users(notification_data)
 
 
-def notify_users(notification_data):
+def notify_users(notification_data: dict[str, tuple[User, list[Job]]]):
     """
     Notify users about new jobs
     """
+    for user_pk in notification_data:
+        user = notification_data[user_pk][0]
+        email_html = render_to_string('email/new_jobs_found.html', {
+            'user': user,
+            'jobs': notification_data[user_pk][1],
+        })
+        email_plain = strip_tags(email_html)
+        from_email = 'Hawk Job Tracker <hrushikeshrv@gmail.com>'
+        to_email = user.email
+        # TODO: setup gmail
