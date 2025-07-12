@@ -13,6 +13,9 @@ class Page:
     company_id: int
     url: str
     selector: str
+    response_type: str = 'html'
+    title_key: str = ''
+    job_id_key: str = ''
 
 
 @dataclass

@@ -1,6 +1,7 @@
 """
 Scraper script to be deployed on AWS Lambda.
 """
+from argparse import ArgumentParser
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
@@ -49,22 +50,38 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
             page=page,
             error=f'Error: {request.status_code} for {url}'
         )])
-    soup = BeautifulSoup(request.content, 'html.parser')
-    # Find all elements that match the selector
-    elements = soup.select(page.selector)
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    for element in elements:
-        title = element.get_text(strip=True)
-        if title:
-            results.append(Job(
-                title=title,
-                company=page.company,
-                company_id=page.company_id,
-                page=page,
-                last_seen=timestamp,
-                job_id='',
-            ))
+    if page.response_type == 'json':
+        response = request.json()
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        jobs = response.get(page.selector, [])
+        for job in jobs:
+            title = job.get(page.title_key or 'title', '').strip()
+            if title:
+                results.append(Job(
+                    title=title,
+                    company=page.company,
+                    company_id=page.company_id,
+                    page=page,
+                    last_seen=timestamp,
+                    job_id=job.get(page.job_id_key or 'id', '')
+                ))
+    else:
+        soup = BeautifulSoup(request.content, 'html.parser')
+        elements = soup.select(page.selector)
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        for element in elements:
+            title = element.get_text(strip=True)
+            if title:
+                results.append(Job(
+                    title=title,
+                    company=page.company,
+                    company_id=page.company_id,
+                    page=page,
+                    last_seen=timestamp,
+                    job_id='',
+                ))
     return results, []
 
 
@@ -127,4 +144,69 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = ArgumentParser('Scraper script to scrape job postings from tracked pages')
+    parser.add_argument(
+        '-t',
+        help='Test scrape a page and log the results',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--url', '-u',
+        help="The URL to scrape",
+        type=str,
+        required=False
+    )
+    parser.add_argument(
+        '--response-type', '-r',
+        help='Response type of the page to scrape (html or json)',
+        type=str,
+        choices=['html', 'json'],
+        required=False,
+        default='html',
+    )
+    parser.add_argument(
+        '--selector', '-s',
+        help='If the response type is HTML, this is the CSS selector that selects all the job titles. If the response '
+             'type is JSON, this is a comma-separated list of keys that would return the list of job titles from the '
+             'JSON response.',
+        type=str,
+        required=False,
+    )
+    parser.add_argument(
+        '--title-key', '-tk',
+        help='If the response type is JSON, this is the key that contains the job title in a Job object in the JSON '
+             'response.',
+        type=str,
+        required=False,
+    )
+    parser.add_argument(
+        '--job-id-key', '-jik',
+        help='If the response type is JSON, this is the key that contains the job ID in a Job object in the JSON '
+             'response.',
+        type=str,
+        required=False,
+    )
+    args = parser.parse_args()
+    if args.t:
+        if not args.url or not args.selector:
+            print('Test mode requires --url and --selector arguments')
+            exit(1)
+        page = Page(
+            name='Test Page',
+            company='Test Company',
+            company_id=1,
+            id=1,
+            url=args.url,
+            selector=args.selector,
+            response_type=args.response_type,
+            title_key=args.title_key or '',
+            job_id_key=args.job_id_key or ''
+        )
+        jobs, errors = scrape_page(page)
+        print(f'Found {len(jobs)} jobs and {len(errors)} errors on {page.name}')
+        for job in jobs:
+            print(f'Job: {job.title} at {job.company}')
+        for error in errors:
+            print(f'Error: {error.error} on page {error.page.name}')
+    else:
+        main()
