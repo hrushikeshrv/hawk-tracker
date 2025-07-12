@@ -26,6 +26,7 @@ class PushCreateView(APIView):
         serializer = PushSerializer(data=request.data)
         if serializer.is_valid():
             push = serializer.save()
-            create_jobs_and_notify(serializer.data['jobs'], push.id)
+            # TODO: turn this into a celery task and run asynchronously
+            create_jobs_and_notify(serializer.data['data']['jobs'], push.id)
             return Response({}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -1,3 +1,6 @@
+"""
+Scraper script to be deployed on AWS Lambda.
+"""
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
@@ -31,11 +34,15 @@ def get_page_list() -> list[Page] | None:
 
 def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
     """
-    Scrape the page at the given URL and return the title and content
+    Scrape the page at the given URL and return a list of Jobs found
+    and a list of any errors encountered during scraping.
     """
     results = []
     url = page.url
-    request = requests.get(url)
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    request = requests.get(url, headers=headers)
     if request.status_code != 200:
         print(f'Error: {request.status_code} for {url}')
         return ([], [ScrapeError(
@@ -103,16 +110,19 @@ def push_jobs(jobs: list[Job], errors: list[ScrapeError], timestamp: str) -> boo
 
 def main():
     """
-    Get pages from the server, scrape pages, and push scraped job data back to the server
+    Get pages to scrape from the server, scrape those pages,
+    and push scraped job data back to the server
     """
     pages = get_page_list()
     results = []
     errors = []
     if pages:
         for page in pages:
+            print(f'Scraping page: {page.name} ({page.url})')
             res, err = scrape_page(page)
             results.extend(res)
             errors.extend(err)
+            print(f'Found {len(res)} jobs and {len(err)} errors on {page.name}')
     push_jobs(results, errors, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 

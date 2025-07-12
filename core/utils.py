@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from core.models import Job, Page, Watchlist
+from core.models import Job
 from users.models import User
 
 

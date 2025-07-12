@@ -54,7 +54,7 @@ class Page(models.Model):
         ('senior', 'Senior'),
         ('c_level', 'C-level'),
     ]
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=50)
     url = models.URLField()
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='pages')
     location = models.CharField(max_length=64, default='', null=True, blank=True)
