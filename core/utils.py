@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.template.loader import render_to_string
@@ -7,7 +8,7 @@ from core.models import Job
 from users.models import User
 
 
-def create_jobs_and_notify(jobs, push_id):
+def create_jobs_and_notify(jobs, push_id) -> None:
     """
     Bulk create jobs returned by the push from Lambda,
     figure out which jobs are new, and notify users watching those jobs
@@ -52,9 +53,11 @@ def create_jobs_and_notify(jobs, push_id):
     notify_users(notification_data)
 
 
-def notify_users(notification_data: dict[str, tuple[User, list[Job]]]):
+def notify_users(notification_data: dict[str, tuple[User, list[Job]]]) -> None:
     """
-    Notify users about new jobs
+    Notify users about new jobs.
+    :param notification_data: A dictionary mapping a user's primary key to a 2-tuple of
+        the user's object and a list of new jobs to notify the user about
     """
     for user_pk in notification_data:
         user = notification_data[user_pk][0]
@@ -63,6 +66,16 @@ def notify_users(notification_data: dict[str, tuple[User, list[Job]]]):
             'jobs': notification_data[user_pk][1],
         })
         email_plain = strip_tags(email_html)
-        from_email = 'Hawk Job Tracker <hrushikeshrv@gmail.com>'
+        from_email = 'Hawk Job Tracker <jobs@hrus.in>'
         to_email = user.email
-        # TODO: setup gmail
+        today = datetime.now().strftime('%d %b, %Y')
+        try:
+            send_mail(
+                subject=f'New Jobs Found on Your Watchlist - {today}',
+                message=email_plain,
+                html_message=email_html,
+                from_email=from_email,
+                recipient_list=[to_email],
+            )
+        except Exception as e:
+            print(f'Error sending email to {to_email}: {e}')
