@@ -734,6 +734,22 @@ tbody {
     font-size: 1rem;
 }
 
+tbody td {
+    padding: 2px 5px;
+}
+
+tbody tr:nth-child(even) {
+    background-color: var(--background-color);
+}
+
+tbody tr:nth-child(odd) {
+    background-color: var(--background-dark-1);
+}
+
+tbody tr:hover {
+    background-color: var(--background-dark-2);
+}
+
 .hidden {
     display: none;
 }
@@ -836,4 +852,14 @@ footer nav {
 */
 .login-form label {
     margin-top: 20px;
+}
+
+/*
+    dashboard styles
+*/
+
+.unfollow-watchlist-button {
+    background-color: transparent;
+    float: right;
+    cursor: pointer;
 }

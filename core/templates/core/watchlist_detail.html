@@ -24,7 +24,7 @@
                         <td>{{ job.date_added|date:"Y-m-d" }}</td>
                     </tr>
                 {% empty %}
-                    <tr>
+                    <tr style="background-color: var(--background-color);">
                         <td colspan="3" style="text-align: center; padding-top: 10px;">No jobs in this watchlist.</td>
                     </tr>
                 {% endfor %}

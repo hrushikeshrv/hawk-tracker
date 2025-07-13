@@ -17,7 +17,7 @@
                 </tr>
             </thead>
             <tbody id="notification-list">
-                <tr>
+                <tr style="background-color: var(--background-color);">
                     <td colspan="4" style="text-align: center; padding-top: 10px;">No notifications yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a></td>
                 </tr>
             </tbody>
@@ -27,16 +27,19 @@
     <span class="mbt-20"></span>
 
     <h1 style="margin-bottom: 0;">Watchlists</h1>
-    <div id="watchlist-container" class="flexbox-row pad-10">
-        {% for watchlist in watchlists %}
-            <div class="watchlist-card-container pad-20 flexbox-column ajc column-third">
-                <div class="watchlist-card flexbox-column">
-                    {{ watchlist.name }}
-                </div>
-            </div>
-        {% empty %}
-            <span class="mbt-10">No watchlists yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a></span>
-        {% endfor %}
+    <div id="watchlist-container" class="table-container">
+        <table>
+            <tbody>
+                {% for watchlist in watchlists %}
+                    <tr>
+                        <td><a href="{% url 'core:watchlist_detail' watchlist.id %}" style="display: block;">{{ watchlist.name }}</a></td>
+                        <td><button class="unfollow-watchlist-button" data-tippy-content="Unfollow watchlist"><span class="material-symbols-outlined">notifications_off</span></button></td>
+                    </tr>
+                {% empty %}
+                    <span class="mbt-10">No watchlists yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a></span>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}
 
