@@ -2,7 +2,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, reverse
-from django.views.generic import TemplateView, View, CreateView
+from django.views.generic import TemplateView, View, CreateView, ListView
 
 from core.models import Watchlist
 
@@ -56,3 +56,14 @@ class WatchlistDetailView(TemplateView):
         context['watchlist'] = watchlist
         context['pages'] = paginated_pages
         return context
+
+
+class WatchlistListView(ListView):
+    template_name = 'core/watchlist_list.html'
+    model = Watchlist
+    paginate_by = 30
+    context_object_name = 'watchlists'
+
+    def get_queryset(self):
+        queryset = super().get_queryset().annotate(page_count=Count('pages'), subscriber_count=Count('subscribers')).prefetch_related('subscribers', 'pages')
+        return queryset

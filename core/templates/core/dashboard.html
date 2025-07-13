@@ -18,7 +18,8 @@
             </thead>
             <tbody id="notification-list">
                 <tr style="background-color: var(--background-color);">
-                    <td colspan="4" style="text-align: center; padding-top: 10px;">No notifications yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a></td>
+                    <td colspan="4" style="text-align: center; padding-top: 10px;">No notifications yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a> or
+                        <a href="{% url 'core:watchlist_list' %}" class="a">explore watchlists</a>.</td>
                 </tr>
             </tbody>
         </table>
@@ -27,6 +28,20 @@
     <span class="mbt-20"></span>
 
     <h1 style="margin-bottom: 0;">Watchlists</h1>
+    <span class="mb-10 flexbox-row jcfs aic">
+        <span class="flexbox-row aic">
+            <span class="material-symbols-outlined">add</span>
+            <a href="{% url 'core:watchlist_create' %}" class="a">
+                <span>Create a watchlist</span>
+            </a>
+        </span>
+        <span class="flexbox-row aic" style="margin-left: 10px;">
+            <span class="material-symbols-outlined">search</span>
+            <a href="{% url 'core:watchlist_list' %}" class="a">
+                <span>Explore watchlists</span>
+            </a>
+        </span>
+    </span>
     <div id="watchlist-container" class="table-container">
         <table>
             <colgroup>

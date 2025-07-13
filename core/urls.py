@@ -5,12 +5,14 @@ from core.views import (
     HomepageView,
     WatchlistCreateView,
     WatchlistDetailView,
+    WatchlistListView,
 )
 
 app_name = 'core'
 
 urlpatterns = [
     path('', HomepageView.as_view(), name='index'),
-    path('watchlist/create', WatchlistCreateView.as_view(), name='watchlist_create'),
-    path('watchlist/<int:pk>', WatchlistDetailView.as_view(), name='watchlist_detail'),
+    path('watchlists/create', WatchlistCreateView.as_view(), name='watchlist_create'),
+    path('watchlists/<int:pk>', WatchlistDetailView.as_view(), name='watchlist_detail'),
+    path('watchlists/explore', WatchlistListView.as_view(), name='watchlist_list'),
 ]

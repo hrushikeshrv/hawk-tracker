@@ -9,10 +9,11 @@
         <a href="" class="material-symbols-outlined button">edit</a>
     </div>
     <div class="mb-10 flexbox-column">
-        <span>Created by {{ watchlist.owner.username }}</span>
+        <strong>Created by {{ watchlist.owner.username }}</strong>
         {% with watchlist.subscribers.count as sub_count %}
-        <span>{{ sub_count }} subscriber{{ sub_count|pluralize }}</span>
+        <strong>{{ sub_count }} subscriber{{ sub_count|pluralize }}</strong>
         {% endwith %}
+        <p>{{ watchlist.description }}</p>
     </div>
     <div class="table-container">
         <table id="watchlist-detail-container">

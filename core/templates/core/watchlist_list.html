@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block title %}Explore Watchlists{% endblock %}
+
+{% block body %}
+    <h1 class="mb-10">Explore Watchlists</h1>
+    <div class="table-container">
+        <table id="watchlist-table-container">
+            <thead>
+                <tr>
+                    <th>Watchlist</th>
+                    <th>Description</th>
+                    <th>Pages</th>
+                    <th>Subscribers</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for watchlist in watchlists %}
+                    <tr>
+                        <td><a href="{% url 'core:watchlist_detail' watchlist.id %}" style="display: block;">{{ watchlist.name }}</a></td>
+                        <td><a href="{% url 'core:watchlist_detail' watchlist.id %}" style="display: block;">{{ watchlist.description }}</a></td>
+                        <td><a href="{% url 'core:watchlist_detail' watchlist.id %}" style="display: block;">{{ watchlist.page_count }} page{{ watchlist.page_count|pluralize }}</a></td>
+                        <td><a href="{% url 'core:watchlist_detail' watchlist.id %}" style="display: block;">{{ watchlist.subscriber_count }} subscriber{{ watchlist.subscriber_count|pluralize }}</a></td>
+                        <td class="flexbox-row ajc">
+                            <button class="subscribe-watchlist-button flexbox-row ajc" data-tippy-content="Subscribe to watchlist">
+                                <span class="material-symbols-outlined">add_alert</span>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <span class="mbt-10"></span>
+    <div class="pagination flexbox-row aic">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="pagination-navigation" style="padding: 1px 8px;">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_left</span></a>
+        {% endif %}
+        <span class="space-lr">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_right</span></a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-navigation" style="padding: 1px 8px;">Last</a>
+        {% endif %}
+    </div>
+{% endblock %}

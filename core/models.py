@@ -84,6 +84,7 @@ class Page(models.Model):
 class Watchlist(models.Model):
     """A list of pages to watch for a user"""
     name = models.CharField(max_length=64)
+    description = models.CharField(max_length=255, blank=True, default='')
     pages = models.ManyToManyField(Page, related_name='watchlists')
     owner = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='created_watchlists')
     subscribers = models.ManyToManyField("users.User", related_name='watchlists', blank=True)

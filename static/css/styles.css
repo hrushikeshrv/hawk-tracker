@@ -875,7 +875,8 @@ footer nav {
 */
 
 .unfollow-watchlist-button,
-.edit-watchlist-button {
+.edit-watchlist-button,
+.subscribe-watchlist-button {
     background-color: transparent;
     float: right;
     cursor: pointer;
