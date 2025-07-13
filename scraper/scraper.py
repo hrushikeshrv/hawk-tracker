@@ -27,6 +27,9 @@ def get_page_list() -> list[Page] | None:
                 id=page['id'],
                 url=page['url'],
                 selector=page['selector'],
+                response_type=page['response_type'],
+                title_key=page.get('title_key', ''),
+                job_id_key=page.get('job_id_key', '')
             ))
         return results
     else:
@@ -50,7 +53,6 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
             page=page,
             error=f'Error: {request.status_code} for {url}'
         )])
-
     if page.response_type == 'json':
         response = request.json()
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

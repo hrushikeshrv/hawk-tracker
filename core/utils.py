@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from core.models import Job
+from core.models import Job, Notification
 from users.models import User
 
 
@@ -36,9 +36,6 @@ def create_jobs_and_notify(jobs, push_id) -> None:
     ]
     new_jobs = Job.objects.bulk_create(new_jobs)
 
-    print(f'Found {len(new_jobs)} new jobs')
-    print(new_jobs)
-
     # A dictionary mapping a user's email to a list of new jobs
     notification_data = {}
     # For each new job, find the users who are watching the page.
@@ -61,14 +58,19 @@ def notify_users(notification_data: dict[str, tuple[User, list[Job]]]) -> None:
     """
     for user_pk in notification_data:
         user = notification_data[user_pk][0]
+        Notification.objects.create(
+            user=user,
+            n_new_jobs=len(notification_data[user_pk][1]),
+            jobs=notification_data[user_pk][1],
+        )
         email_html = render_to_string('email/new_jobs_found.html', {
             'user': user,
             'jobs': notification_data[user_pk][1],
         })
         email_plain = strip_tags(email_html)
-        from_email = 'Hawk Job Tracker <jobs@hrus.in>'
+        from_email = 'Job Tracker <jobs@hrus.in>'
         to_email = user.email
-        today = datetime.now().strftime('%d %b, %Y')
+        today = datetime.now().strftime('%d %b %Y')
         try:
             send_mail(
                 subject=f'New Jobs Found on Your Watchlist - {today}',
