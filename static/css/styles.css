@@ -723,6 +723,8 @@ table thead {
     font-size: 1rem;
     font-weight: bolder;
     border-bottom: 1px solid var(--font-color);
+    position: sticky;
+    top: 0;
 }
 
 table thead tr {
@@ -847,6 +849,20 @@ footer nav {
     margin: 0 10px;
 }
 
+.pagination-navigation {
+    border-radius: 5px;
+    background-color: var(--background-dark-1);
+    transition: background-color ease 0.2s;
+    margin: 0 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-navigation:hover {
+    background-color: var(--background-dark-2);
+}
+
 /*
     login page styles
 */
@@ -858,8 +874,13 @@ footer nav {
     dashboard styles
 */
 
-.unfollow-watchlist-button {
+.unfollow-watchlist-button,
+.edit-watchlist-button {
     background-color: transparent;
     float: right;
     cursor: pointer;
+}
+
+#watchlist-container td {
+    text-align: center;
 }

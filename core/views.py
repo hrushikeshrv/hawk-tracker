@@ -1,3 +1,5 @@
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, reverse
 from django.views.generic import TemplateView, View, CreateView
@@ -12,7 +14,7 @@ def test_view(request, *args, **kwargs):
 class HomepageView(View):
     def get(self, request):
         if request.user.is_authenticated:
-            watchlists = request.user.watchlists.all()[:10]
+            watchlists = request.user.watchlists.annotate(page_count=Count('pages'))
             return render(request, 'core/dashboard.html', {
                 'watchlists': watchlists,
             })
@@ -25,7 +27,7 @@ class WatchlistCreateView(CreateView):
     fields = ['name',]
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        form.instance.owner = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -38,5 +40,19 @@ class WatchlistDetailView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         watchlist_id = self.kwargs.get('pk')
-        context['watchlist'] = Watchlist.objects.get(pk=watchlist_id)
+        watchlist = Watchlist.objects.select_related('owner').prefetch_related('pages', 'subscribers', 'pages__company').get(pk=watchlist_id)
+
+        pages = watchlist.pages.all()
+        paginator = Paginator(pages, 30)    # Show 30 pages per watchlist
+        page_number = self.request.GET.get('page')
+
+        try:
+            paginated_pages = paginator.page(page_number)
+        except PageNotAnInteger:
+            paginated_pages = paginator.page(1)
+        except EmptyPage:
+            paginated_pages = paginator.page(paginator.num_pages)
+
+        context['watchlist'] = watchlist
+        context['pages'] = paginated_pages
         return context

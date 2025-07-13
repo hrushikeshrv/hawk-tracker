@@ -41,11 +41,12 @@ def create_jobs_and_notify(jobs, push_id) -> None:
     # For each new job, find the users who are watching the page.
     # There must be a better way to do this using joins
     for job in new_jobs:
-        watchlists = job.page.watchlists.all().select_related('user')
+        watchlists = job.page.watchlists.all().prefetch_related('subscribers')
         for watchlist in watchlists:
-            if watchlist.user.pk not in notification_data:
-                notification_data[watchlist.user.pk] = (watchlist.user, [])
-            notification_data[watchlist.user.pk][1].append(job)
+            for user in watchlist.subscribers.all():
+                if user.pk not in notification_data:
+                    notification_data[user.pk] = (user, [])
+                notification_data[user.pk][1].append(job)
 
     notify_users(notification_data)
 

@@ -5,33 +5,52 @@
 
 {% block body %}
     <div class="flexbox-row jcsb aic">
-        <h1>{{ watchlist.name }}</h1>
+        <h1 class="mb-10">{{ watchlist.name }}</h1>
+        <a href="" class="material-symbols-outlined button">edit</a>
+    </div>
+    <div class="mb-10 flexbox-column">
+        <span>Created by {{ watchlist.owner.username }}</span>
+        {% with watchlist.subscribers.count as sub_count %}
+        <span>{{ sub_count }} subscriber{{ sub_count|pluralize }}</span>
+        {% endwith %}
     </div>
     <div class="table-container">
         <table id="watchlist-detail-container">
             <thead>
                 <tr>
-                    <th>Job Title</th>
+                    <th>Page</th>
                     <th>Company</th>
-                    <th>Date Added</th>
+                    <th>URL</th>
                 </tr>
             </thead>
             <tbody id="watchlist-detail-list">
-                {% for job in jobs %}
+                {% for page in pages %}
                     <tr>
-                        <td>{{ job.title }}</td>
-                        <td>{{ job.company }}</td>
-                        <td>{{ job.date_added|date:"Y-m-d" }}</td>
+                        <td>{{ page.name }}</td>
+                        <td>{{ page.company.name }}</td>
+                        <td class="flexbox-row jcfs"><a href="{{ page.url }}" class="a flexbox-row aic" target="_blank"><span class="material-symbols-outlined" style="font-size: 1rem;">open_in_new</span>{{ page.url|truncatechars:30 }}</a></td>
                     </tr>
                 {% empty %}
                     <tr style="background-color: var(--background-color);">
-                        <td colspan="3" style="text-align: center; padding-top: 10px;">No jobs in this watchlist.</td>
+                        <td colspan="3" style="text-align: center; padding-top: 10px;">No pages in this watchlist.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <span class="mbt-20"></span>
+    <span class="mbt-10"></span>
+
+    <div class="pagination flexbox-row aic">
+        {% if pages.has_previous %}
+            <a href="?page=1" class="pagination-navigation" style="padding: 1px 8px;">First</a>
+            <a href="?page={{ pages.previous_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_left</span></a>
+        {% endif %}
+        <span class="space-lr">Page {{ pages.number }} of {{ pages.paginator.num_pages }}</span>
+        {% if pages.has_next %}
+            <a href="?page={{ pages.next_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_right</span></a>
+            <a href="?page={{ pages.paginator.num_pages }}" class="pagination-navigation" style="padding: 1px 8px;">Last</a>
+        {% endif %}
+    </div>
 
 {% endblock %}

@@ -85,7 +85,8 @@ class Watchlist(models.Model):
     """A list of pages to watch for a user"""
     name = models.CharField(max_length=64)
     pages = models.ManyToManyField(Page, related_name='watchlists')
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='watchlists')
+    owner = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='created_watchlists')
+    subscribers = models.ManyToManyField("users.User", related_name='watchlists', blank=True)
 
     def __str__(self):
-        return f'Watchlist {self.name} by {self.user.username}'
+        return f'Watchlist {self.name} by {self.owner.username}'

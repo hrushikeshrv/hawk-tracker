@@ -29,11 +29,34 @@
     <h1 style="margin-bottom: 0;">Watchlists</h1>
     <div id="watchlist-container" class="table-container">
         <table>
+            <colgroup>
+                <col style="width: 50%;">
+                <col>
+                <col>
+                <col>
+             </colgroup>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Owner</th>
+                    <th>Pages</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
             <tbody>
                 {% for watchlist in watchlists %}
                     <tr>
                         <td><a href="{% url 'core:watchlist_detail' watchlist.id %}" style="display: block;">{{ watchlist.name }}</a></td>
-                        <td><button class="unfollow-watchlist-button" data-tippy-content="Unfollow watchlist"><span class="material-symbols-outlined">notifications_off</span></button></td>
+                        <td>{{ watchlist.owner }}</td>
+                        <td>{{ watchlist.page_count }} page{{ watchlist.page_count|pluralize }}</td>
+                        <td class="flexbox-row ajc">
+                            {% if watchlist.owner == request.user %}
+                                <button class="edit-watchlist-button flexbox-row ajc" data-tippy-content="Edit watchlist">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </button>
+                            {% endif %}
+                            <button class="unfollow-watchlist-button flexbox-row ajc" data-tippy-content="Unfollow watchlist"><span class="material-symbols-outlined">notifications_off</span></button>
+                        </td>
                     </tr>
                 {% empty %}
                     <span class="mbt-10">No watchlists yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a></span>
