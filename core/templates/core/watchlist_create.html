@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Create Watchlist{% endblock %}
+
+{% block body %}
+    <form action="{% url 'core:watchlist_create' %}" method="POST" class="column-half center pad-30">
+        {% csrf_token %}
+        <h1>Create Watchlist</h1>
+        <label for="{{ form.name.id_for_label }}" class="space-lr"><strong>{{ form.name.label }}: </strong></label>
+        {{ form.name }}
+        {% if form.name.errors %}
+            <div class="error-message">
+                {{ form.name.errors }}
+            </div>
+        {% endif %}
+
+        <button class="cta-button" type="submit">
+            <span>Create</span>
+        </button>
+    </form>
+{% endblock %}

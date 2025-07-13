@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}{{ watchlist.name }}{% endblock %}
+
+{% block body %}
+    <div class="flexbox-row jcsb aic">
+        <h1>{{ watchlist.name }}</h1>
+    </div>
+    <div class="table-container">
+        <table id="watchlist-detail-container">
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Date Added</th>
+                </tr>
+            </thead>
+            <tbody id="watchlist-detail-list">
+                {% for job in jobs %}
+                    <tr>
+                        <td>{{ job.title }}</td>
+                        <td>{{ job.company }}</td>
+                        <td>{{ job.date_added|date:"Y-m-d" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding-top: 10px;">No jobs in this watchlist.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <span class="mbt-20"></span>
+
+{% endblock %}
