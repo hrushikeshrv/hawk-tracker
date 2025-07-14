@@ -54,6 +54,10 @@
     <script src="{% static 'js/theme-selector.js' %}"></script>
 </head>
 <body>
+    {% csrf_token %}
+    <script>
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    </script>
     {% include 'header.html' %}
     <div style="display: none;">{% block hidden_data %}{% endblock %}</div>
     <main class="flexbox-column center">

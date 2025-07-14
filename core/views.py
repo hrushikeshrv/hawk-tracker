@@ -24,10 +24,12 @@ class HomepageView(View):
 class WatchlistCreateView(CreateView):
     template_name = 'core/watchlist_create.html'
     model = Watchlist
-    fields = ['name',]
+    fields = ['name', 'description']
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+        form.instance.save()
+        form.instance.subscribers.add(self.request.user)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -67,3 +69,12 @@ class WatchlistListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset().annotate(page_count=Count('pages'), subscriber_count=Count('subscribers')).prefetch_related('subscribers', 'pages')
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        if user.is_authenticated:
+            context['subscribed_watchlists'] = user.watchlists.values_list('id', flat=True)
+        else:
+            context['subscribed_watchlists'] = []
+        return context

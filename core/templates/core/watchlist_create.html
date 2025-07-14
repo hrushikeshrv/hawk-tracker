@@ -7,15 +7,26 @@
     <form action="{% url 'core:watchlist_create' %}" method="POST" class="column-half center pad-30">
         {% csrf_token %}
         <h1>Create Watchlist</h1>
-        <label for="{{ form.name.id_for_label }}" class="space-lr"><strong>{{ form.name.label }}: </strong></label>
-        {{ form.name }}
-        {% if form.name.errors %}
-            <div class="error-message">
-                {{ form.name.errors }}
-            </div>
-        {% endif %}
+        <div class="flexbox-column">
+            <label for="{{ form.name.id_for_label }}" class="space-lr"><strong>{{ form.name.label }}: </strong></label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="error-message">
+                    {{ form.name.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="flexbox-column mt-20">
+            <label for="{{ form.description.id_for_label }}" class="space-lr"><strong>{{ form.description.label }}: </strong></label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="error-message">
+                    {{ form.description.errors }}
+                </div>
+            {% endif %}
+        </div>
 
-        <button class="cta-button" type="submit">
+        <button class="cta-button mt-20" type="submit">
             <span>Create</span>
         </button>
     </form>

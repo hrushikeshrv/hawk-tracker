@@ -1,9 +1,18 @@
 {% extends 'layout.html' %}
+{% load static %}
 
 {% block title %}Explore Watchlists{% endblock %}
 
+{% block hidden_data %}
+    <input type="hidden" name="subscribe-to-watchlist-url" value="{% url 'api:watchlist-subscribe' %}" id="subscribe-to-watchlist-url">
+{% endblock %}
+
 {% block body %}
     <h1 class="mb-10">Explore Watchlists</h1>
+{#    <div class="flexbox-row mb-10 aic">#}
+{#        <label for="search-watchlists" class="flexbox-row ajc" style="margin-right: 5px;"><span class="material-symbols-outlined">search</span></label>#}
+{#        <input type="search" name="search-watchlists" id="search-watchlists" placeholder="Search Watchlists">#}
+{#    </div>#}
     <div class="table-container">
         <table id="watchlist-table-container">
             <thead>
@@ -23,9 +32,15 @@
                         <td><a href="{% url 'core:watchlist_detail' watchlist.id %}" style="display: block;">{{ watchlist.page_count }} page{{ watchlist.page_count|pluralize }}</a></td>
                         <td><a href="{% url 'core:watchlist_detail' watchlist.id %}" style="display: block;">{{ watchlist.subscriber_count }} subscriber{{ watchlist.subscriber_count|pluralize }}</a></td>
                         <td class="flexbox-row ajc">
-                            <button class="subscribe-watchlist-button flexbox-row ajc" data-tippy-content="Subscribe to watchlist">
-                                <span class="material-symbols-outlined">add_alert</span>
-                            </button>
+                            {% if watchlist.id in subscribed_watchlists %}
+                                <button class="unfollow-watchlist-button flexbox-row ajc" data-tippy-content="Unfollow watchlist" data-watchlist-id="{{ watchlist.id }}" data-operation="unsubscribe">
+                                    <span class="material-symbols-outlined">notifications_off</span>
+                                </button>
+                            {% else %}
+                                <button class="subscribe-watchlist-button flexbox-row ajc" data-tippy-content="Subscribe to watchlist" data-watchlist-id="{{ watchlist.id }}" data-operation="subscribe">
+                                    <span class="material-symbols-outlined">add_alert</span>
+                                </button>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -44,4 +59,8 @@
             <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-navigation" style="padding: 1px 8px;">Last</a>
         {% endif %}
     </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/watchlist_utils.js' %}"></script>
 {% endblock %}

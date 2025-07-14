@@ -3,6 +3,10 @@
 
 {% block title %}{{ watchlist.name }}{% endblock %}
 
+{% block hidden_data %}
+    <input type="hidden" name="subscribe-to-watchlist-url" value="{% url 'api:watchlist-subscribe' %}" id="subscribe-to-watchlist-url">
+{% endblock %}
+
 {% block body %}
     <div class="flexbox-row jcsb aic">
         <h1 class="mb-10">{{ watchlist.name }}</h1>
@@ -54,4 +58,8 @@
         {% endif %}
     </div>
 
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/watchlist_utils.js' %}"></script>
 {% endblock %}

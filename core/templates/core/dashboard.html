@@ -2,6 +2,10 @@
 {% load static %}
 {% block title %}Hawk Tracker{% endblock %}
 
+{% block hidden_data %}
+    <input type="hidden" name="subscribe-to-watchlist-url" value="{% url 'api:watchlist-subscribe' %}" id="subscribe-to-watchlist-url">
+{% endblock %}
+
 {% block body %}
     <div class="flexbox-row jcsb aic">
         <h1>Notifications</h1>
@@ -70,11 +74,11 @@
                                     <span class="material-symbols-outlined">edit</span>
                                 </button>
                             {% endif %}
-                            <button class="unfollow-watchlist-button flexbox-row ajc" data-tippy-content="Unfollow watchlist"><span class="material-symbols-outlined">notifications_off</span></button>
+                            <button class="unfollow-watchlist-button flexbox-row ajc" data-tippy-content="Unfollow watchlist" data-watchlist-id="{{ watchlist.id }}" data-operation="unsubscribe"><span class="material-symbols-outlined">notifications_off</span></button>
                         </td>
                     </tr>
                 {% empty %}
-                    <span class="mbt-10">No watchlists yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a></span>
+                    <span class="mbt-10">No watchlists subscribed.</span>
                 {% endfor %}
             </tbody>
         </table>
@@ -82,5 +86,5 @@
 {% endblock %}
 
 {% block javascript %}
-    <script src="{% static 'js/notification-renderer.js' %}"></script>
+    <script src="{% static 'js/watchlist_utils.js' %}"></script>
 {% endblock %}
