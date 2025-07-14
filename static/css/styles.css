@@ -834,6 +834,10 @@ button#change-theme-button {
     background-color: var(--background-dark-1);
 }
 
+a.block-link {
+    display: block;
+}
+
 /*
     header styles
 */

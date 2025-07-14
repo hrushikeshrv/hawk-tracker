@@ -2,9 +2,9 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, reverse
-from django.views.generic import TemplateView, View, CreateView, ListView
+from django.views.generic import TemplateView, View, CreateView, ListView, DetailView
 
-from core.models import Watchlist
+from core.models import Watchlist, Page, Company
 
 
 def test_view(request, *args, **kwargs):
@@ -19,6 +19,22 @@ class HomepageView(View):
                 'watchlists': watchlists,
             })
         return render(request, 'core/index.html')
+
+
+class CompanyDetailView(DetailView):
+    model = Company
+    template_name = 'core/company_detail.html'
+    context_object_name = 'company'
+
+
+class PageDetailView(DetailView):
+    model = Page
+    template_name = 'core/page_detail.html'
+    context_object_name = 'page'
+
+    def get_object(self, queryset=None):
+        """Override to ensure the page is fetched with its related company."""
+        return Page.objects.select_related('company').prefetch_related('jobs').get(pk=self.kwargs['pk'])
 
 
 class WatchlistCreateView(CreateView):

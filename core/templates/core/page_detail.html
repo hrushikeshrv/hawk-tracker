@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ page.name }}{% endblock %}
+
+{% block body %}
+    <h1 class="mb-10">{{ page.name }}</h1>
+    <div class="table-container">
+        <table>
+            <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>{{ page.name }}</td>
+                </tr>
+                <tr>
+                    <td>URL</td>
+                    <td class="flexbox-row jcfs"><a href="{{ page.url }}" class="a flexbox-row aic" target="_blank"><span class="material-symbols-outlined" style="font-size: 1rem;">open_in_new</span>{{ page.url|truncatechars:40 }}</a></td>
+                </tr>
+                <tr>
+                    <td>Company</td>
+                    <td><a href="{% url 'core:company_detail' page.company.id %}" class="block-link">{{ page.company.name }}</a></td>
+                </tr>
+                <tr>
+                    <td>Location</td>
+                    <td>{{ page.location }}</td>
+                </tr>
+                <tr>
+                    <td>Remote</td>
+                    <td>{% if page.is_remote %}Yes{% else %}No{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>Years of Experience</td>
+                    <td>{{ page.years_of_experience }}</td>
+                </tr>
+                <tr>
+                    <td>Level</td>
+                    <td>{{ page.get_level_display }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h1 class="mb-10">Jobs</h1>
+
+{% endblock %}
