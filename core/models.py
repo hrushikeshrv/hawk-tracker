@@ -14,6 +14,9 @@ class Company(models.Model):
 
 class Job(models.Model):
     """A job posting found on a page"""
+    class Meta:
+        ordering = ['-last_seen']
+
     title = models.CharField(max_length=200)
     push = models.ForeignKey('Push', on_delete=models.CASCADE, related_name='jobs')
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='jobs')

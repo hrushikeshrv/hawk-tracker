@@ -26,6 +26,27 @@ class CompanyDetailView(DetailView):
     template_name = 'core/company_detail.html'
     context_object_name = 'company'
 
+    def get_object(self, queryset=None):
+        """Override to ensure the company is fetched with its related jobs."""
+        return Company.objects.prefetch_related('jobs').get(pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        company = self.get_object()
+        jobs = company.jobs.all()
+        paginator = Paginator(jobs, 30)  # Show 30 jobs per page
+        page_number = self.request.GET.get('page')
+
+        try:
+            paginated_pages = paginator.page(page_number)
+        except PageNotAnInteger:
+            paginated_pages = paginator.page(1)
+        except EmptyPage:
+            paginated_pages = paginator.page(paginator.num_pages)
+
+        context['pages'] = paginated_pages
+        return context
+
 
 class PageDetailView(DetailView):
     model = Page
@@ -35,6 +56,23 @@ class PageDetailView(DetailView):
     def get_object(self, queryset=None):
         """Override to ensure the page is fetched with its related company."""
         return Page.objects.select_related('company').prefetch_related('jobs').get(pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page = self.get_object()
+        jobs = page.jobs.all()
+        paginator = Paginator(jobs, 30)      # Show 30 jobs per page
+        page_number = self.request.GET.get('page')
+
+        try:
+            paginated_pages = paginator.page(page_number)
+        except PageNotAnInteger:
+            paginated_pages = paginator.page(1)
+        except EmptyPage:
+            paginated_pages = paginator.page(paginator.num_pages)
+
+        context['pages'] = paginated_pages
+        return context
 
 
 class WatchlistCreateView(CreateView):
