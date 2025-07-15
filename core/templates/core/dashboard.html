@@ -16,17 +16,44 @@
         <table id="notification-container">
             <thead>
                 <tr>
-                    <th>Jobs</th>
-                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Company</th>
+                    <th>Page</th>
+                    <th>Link</th>
+                    <th>Last Seen</th>
                 </tr>
             </thead>
             <tbody id="notification-list">
-                <tr style="background-color: var(--background-color);">
-                    <td colspan="4" style="text-align: center; padding-top: 10px;">No notifications yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a> or
-                        <a href="{% url 'core:watchlist_list' %}" class="a">explore watchlists</a>.</td>
-                </tr>
+                {% for notification in notifications %}
+                    {% for job in notification.jobs.all %}
+                        <tr>
+                            <td>{{ job.title }}</td>
+                            <td><a href="{% url 'core:company_detail' job.company.id %}" class="block-link">{{ job.company }}</a></td>
+                            <td><a href="{% url 'core:page_detail' job.page.id %}" class="block-link">{{ job.page|truncatechars:30 }}</a></td>
+                            <td><a href="{{ job.page.url }}" class="a flexbox-row aic" target="_blank"><span class="material-symbols-outlined" style="font-size: 1rem;">open_in_new</span>{{ job.page.url|truncatechars:30 }}</a></td>
+                            <td>{{ job.last_seen|timesince }} ago</td>
+                        </tr>
+                    {% endfor %}
+                {% empty %}
+                    <tr style="background-color: var(--background-color);">
+                        <td colspan="4" style="text-align: center; padding-top: 10px;">No notifications yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a> or
+                            <a href="{% url 'core:watchlist_list' %}" class="a">explore watchlists</a>.</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
+    </div>
+    <span class="mbt-10"></span>
+    <div class="pagination flexbox-row aic">
+        {% if notifications.has_previous %}
+            <a href="?page=1" class="pagination-navigation" style="padding: 1px 8px;">First</a>
+            <a href="?page={{ notifications.previous_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_left</span></a>
+        {% endif %}
+        <span class="space-lr">Page {{ notifications.number }} of {{ notifications.paginator.num_pages }}</span>
+        {% if pages.has_next %}
+            <a href="?page={{ notifications.next_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_right</span></a>
+            <a href="?page={{ notifications.paginator.num_pages }}" class="pagination-navigation" style="padding: 1px 8px;">Last</a>
+        {% endif %}
     </div>
 
     <span class="mbt-20"></span>

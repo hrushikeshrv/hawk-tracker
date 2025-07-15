@@ -39,6 +39,9 @@ class Notification(models.Model):
     jobs = models.ManyToManyField(Job, related_name='notifications', blank=True)
     n_new_jobs = models.IntegerField(default=0)
 
+    def __str__(self):
+        return f'Found {self.n_new_jobs} new jobs on {self.date.strftime("%d %b, %Y, %I:%M:%S %p")}'
+
 
 class Push(models.Model):
     """A push from the Lambda function about changed pages"""

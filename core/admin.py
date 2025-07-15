@@ -40,5 +40,12 @@ class PushAdmin(admin.ModelAdmin):
     form = PushModelForm
 
 
-admin.site.register(Notification)
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['notification_name', 'user', 'date', 'n_new_jobs']
+
+    def notification_name(self, obj):
+        return str(obj)
+
+
 admin.site.register(Watchlist)

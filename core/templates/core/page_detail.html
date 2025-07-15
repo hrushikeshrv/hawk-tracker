@@ -57,6 +57,10 @@
                         <td>{{ job.last_seen|timesince }} ago</td>
                         <td>{{ job.first_seen|timesince }} ago</td>
                     </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; background-color: var(--background-color);">No jobs found yet</td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

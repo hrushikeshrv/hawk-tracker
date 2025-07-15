@@ -59,11 +59,11 @@ def notify_users(notification_data: dict[str, tuple[User, list[Job]]]) -> None:
     """
     for user_pk in notification_data:
         user = notification_data[user_pk][0]
-        Notification.objects.create(
+        notification = Notification.objects.create(
             user=user,
             n_new_jobs=len(notification_data[user_pk][1]),
-            jobs=notification_data[user_pk][1],
         )
+        notification.jobs.set(notification_data[user_pk][1])
         email_html = render_to_string('email/new_jobs_found.html', {
             'user': user,
             'jobs': notification_data[user_pk][1],
