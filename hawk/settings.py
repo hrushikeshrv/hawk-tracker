@@ -27,6 +27,9 @@ SECRET_KEY = os.environ.get("HAWK_DJANGO_SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'jobs.hrus.in',
     '*'
 ]
 
@@ -138,8 +141,8 @@ LOGOUT_REDIRECT_URL = 'core:index'
 AWS_SES_ACCESS_KEY_ID = os.environ.get("AWS_SES_ACCESS_KEY_ID")
 AWS_SES_SECRET_ACCESS_KEY = os.environ.get("AWS_SES_SECRET_ACCESS_KEY")
 DEFAULT_FROM_EMAIL = "jobs@hrus.in"
-if False:
-# if DEBUG:
+# if False:
+if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
     EMAIL_BACKEND = 'django_ses.SESBackend'
