@@ -8,8 +8,10 @@ Django==5.2
 django-debug-toolbar==5.1.0
 django-ses==4.4.0
 djangorestframework==3.16.0
+gunicorn==23.0.0
 idna==3.10
 jmespath==1.0.1
+packaging==25.0
 pillow==11.2.1
 python-dateutil==2.9.0.post0
 requests==2.32.3
