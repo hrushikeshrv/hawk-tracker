@@ -18,6 +18,7 @@ class Job(models.Model):
         ordering = ['-last_seen']
 
     title = models.CharField(max_length=200)
+    url = models.URLField(blank=True, null=True, help_text='URL of the job posting, if available')
     push = models.ForeignKey('Push', on_delete=models.CASCADE, related_name='jobs')
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='jobs')
     page = models.ForeignKey('Page', on_delete=models.CASCADE, related_name='jobs')
@@ -71,6 +72,7 @@ class Page(models.Model):
         ('json', 'JSON'),
     ]
     name = models.CharField(max_length=50)
+    api_url = models.URLField(blank=True, null=True, help_text='If the response type is JSON, this is the URL to the API endpoint that returns the list of jobs. If the response type is HTML, this field is not used.')
     url = models.URLField()
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='pages')
     location = models.CharField(max_length=64, default='', null=True, blank=True)

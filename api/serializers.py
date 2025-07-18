@@ -10,7 +10,7 @@ class PageSerializer(serializers.ModelSerializer):
         model = Page
         fields = [
             'id',
-            'name', 'company', 'company_id', 'url', 'location', 'is_remote',
+            'name', 'company', 'company_id', 'api_url', 'url', 'location', 'is_remote',
             'years_of_experience', 'level', 'selector', 'response_type', 'title_key', 'job_id_key'
         ]
 

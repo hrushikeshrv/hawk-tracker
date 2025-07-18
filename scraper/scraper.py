@@ -2,13 +2,19 @@
 Scraper script to be deployed on AWS Lambda.
 """
 from argparse import ArgumentParser
-from datetime import datetime
-import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
+import os
+import requests
 
 from schema import Job, Page, ScrapeError
 
-SERVER_URL = 'http://127.0.0.1:8000'
+is_lambda = "AWS_LAMBDA_FUNCTION_NAME" in os.environ
+
+if is_lambda:
+    SERVER_URL = 'https://jobs.hrus.in'
+else:
+    SERVER_URL = 'http://127.0.0.1:8000'
 
 
 def recursive_getattr(obj: dict, attr_list: list[str], default=None):
@@ -39,6 +45,7 @@ def get_page_list() -> list[Page] | None:
                 company_id=page['company_id'],
                 id=page['id'],
                 url=page['url'],
+                api_url=page['api_url'],
                 selector=page['selector'],
                 response_type=page['response_type'],
                 title_key=page.get('title_key', ''),
@@ -56,6 +63,8 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
     """
     results = []
     url = page.url
+    if page.api_url:
+        url = page.api_url
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                       "AppleWebKit/537.36 (KHTML, like Gecko) "

@@ -16,6 +16,7 @@ class Page:
     response_type: str = 'html'
     title_key: str = ''
     job_id_key: str = ''
+    api_url: str = ''
 
 
 @dataclass
@@ -27,6 +28,7 @@ class Job:
     page: Page
     last_seen: str
     job_id: str
+    url: str = ''
 
 
 @dataclass
