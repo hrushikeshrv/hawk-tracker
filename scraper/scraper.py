@@ -11,6 +11,19 @@ from schema import Job, Page, ScrapeError
 SERVER_URL = 'http://127.0.0.1:8000'
 
 
+def recursive_getattr(obj: dict, attr_list: list[str], default=None):
+    """
+    Recursively get an attribute from a dictionary using a list of keys.
+    If the attribute does not exist, return the default value.
+    """
+    for attr in attr_list:
+        if isinstance(obj, dict) and attr in obj:
+            obj = obj[attr]
+        else:
+            return default
+    return obj
+
+
 def get_page_list() -> list[Page] | None:
     """
     Get the list of pages to scrape from the Django server
@@ -44,7 +57,15 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
     results = []
     url = page.url
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/114.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/html, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Connection": "keep-alive",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty"
     }
     request = requests.get(url, headers=headers)
     if request.status_code != 200:
@@ -56,7 +77,7 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
     if page.response_type == 'json':
         response = request.json()
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        jobs = response.get(page.selector, [])
+        jobs = recursive_getattr(response, page.selector.split(','), [])
         for job in jobs:
             title = job.get(page.title_key or 'title', '').strip()
             if title:
@@ -127,7 +148,7 @@ def push_jobs(jobs: list[Job], errors: list[ScrapeError], timestamp: str) -> boo
     return request.status_code == 200
 
 
-def main():
+def lambda_handler(event, context):
     """
     Get pages to scrape from the server, scrape those pages,
     and push scraped job data back to the server
@@ -141,7 +162,7 @@ def main():
             res, err = scrape_page(page)
             results.extend(res)
             errors.extend(err)
-            print(f'Found {len(res)} jobs and {len(err)} errors on {page.name}')
+            print(f'Found {len(res)} jobs and {len(err)} errors on {page.name}\n')
     push_jobs(results, errors, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 
@@ -211,4 +232,4 @@ if __name__ == '__main__':
         for error in errors:
             print(f'Error: {error.error} on page {error.page.name}')
     else:
-        main()
+        lambda_handler(None, None)
