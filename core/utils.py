@@ -70,7 +70,7 @@ def notify_users(notification_data: dict[str, tuple[User, list[Job]]]) -> None:
             'jobs': notification_data[user_pk][1],
         })
         email_plain = strip_tags(email_html)
-        from_email = 'Job Tracker <jobs@hrus.in>'
+        from_email = 'Hawk Job Tracker <jobs@hrus.in>'
         to_email = user.email
         today = datetime.now().strftime('%d %b %Y')
         try:

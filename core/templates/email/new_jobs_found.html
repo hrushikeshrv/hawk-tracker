@@ -1,26 +1,112 @@
 <html>
+<head>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Poppins&family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200&display=swap" rel="stylesheet">
+    <style>
+        html {
+            --font-color: rgb(0, 0, 0);
+            --background-light-2: rgb(250, 250, 250);
+            --background-light-1: rgb(246, 246, 246);
+            --background-color: rgb(243, 243, 243);
+            --background-dark-1: rgb(219, 219, 219);
+            --background-dark-2: rgb(181, 181, 181);
+            --primary: rgb(243, 137, 4);
+            --monospace-font: 'JetBrains Mono', monospace;
+            --default-font: 'Poppins', sans-serif;
+        }
+        body {
+            font-family: var(--default-font);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        table {
+            border-collapse: collapse;
+            color: var(--font-color);
+        }
+
+        table th {
+            padding: 7px;
+            text-align: center;
+            font-family: var(--monospace-font);
+        }
+
+        table td {
+            padding: 2px;
+            text-align: center;
+            font-family: var(--default-font);
+        }
+
+        table thead {
+            font-size: 1rem;
+            font-weight: bolder;
+            border-bottom: 1px solid var(--font-color);
+            position: sticky;
+            top: 0;
+        }
+
+        table thead tr {
+            border-bottom: 2px solid var(--font-color);
+        }
+
+        tbody {
+            font-size: 1rem;
+        }
+
+        tbody td {
+            padding: 2px 5px;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--background-color);
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: var(--background-dark-1);
+        }
+
+        tbody tr:hover {
+            background-color: var(--background-dark-2);
+        }
+
+        a.a {
+            border-bottom: 2px solid var(--primary);
+        }
+
+    </style>
+</head>
 <body>
-Found {{ jobs|length }} new jobs.
-<table>
+<strong>
+    Found {{ jobs|length }} new jobs.
+</strong>
+<table style="margin-top: 20px;">
     <thead>
         <tr>
             <td>Title</td>
             <td>Company</td>
             <td>Page</td>
             <td>Page URL</td>
-            <td>Last Seen</td>
-            <td>First Seen</td>
+            <td>Application URL</td>
         </tr>
     </thead>
     <tbody>
         {% for job in jobs %}
             <tr>
                 <td>{{ job.title }}</td>
-                <td><a href="https://jobs.hrus.in{% url 'core:company_detail' job.company.id %}" class="block-link">{{ job.company }}</a></td>
-                <td><a href="https://jobs.hrus.in{% url 'core:page_detail' job.page.id %}" class="block-link">{{ job.page|truncatechars:30 }}</a></td>
-                <td><a href="{{ job.page.url }}" class="a flexbox-row aic" target="_blank"><span class="material-symbols-outlined" style="font-size: 1rem;">open_in_new</span>{{ job.page.url|truncatechars:30 }}</a></td>
-                <td data-tippy-content="{{ job.last_seen }} UTC">{{ job.last_seen|timesince }} ago</td>
-                <td data-tippy-content="{{ job.first_seen }} UTC">{{ job.first_seen|timesince }} ago</td>
+                <td><a href="https://jobs.hrus.in{% url 'core:company_detail' job.company.id %}" class="block-link a">{{ job.company }}</a></td>
+                <td><a href="https://jobs.hrus.in{% url 'core:page_detail' job.page.id %}" class="block-link a">{{ job.page|truncatechars:30 }}</a></td>
+                <td><a href="{{ job.page.url }}" class="a flexbox-row aic" target="_blank">{{ job.page.url|truncatechars:30 }}</a></td>
+                <td>
+                    {% if job.url %}
+                        <a href="{{ job.url }}" target="_blank" class="a">Apply</a>
+                    {% else %}
+                        Not Found
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
     </tbody>
