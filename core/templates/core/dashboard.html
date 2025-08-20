@@ -31,7 +31,7 @@
                             <td><a href="{% url 'core:company_detail' job.company.id %}" class="block-link">{{ job.company }}</a></td>
                             <td><a href="{% url 'core:page_detail' job.page.id %}" class="block-link">{{ job.page|truncatechars:30 }}</a></td>
                             <td><a href="{{ job.page.url }}" class="a flexbox-row aic" target="_blank"><span class="material-symbols-outlined" style="font-size: 1rem;">open_in_new</span>{{ job.page.url|truncatechars:30 }}</a></td>
-                            <td>{{ job.last_seen|timesince }} ago</td>
+                            <td data-tippy-content="{{ job.last_seen }} UTC">{{ job.last_seen|timesince }} ago</td>
                         </tr>
                     {% endfor %}
                 {% empty %}

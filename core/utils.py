@@ -32,6 +32,7 @@ def create_jobs_and_notify(jobs, push_id) -> None:
             push_id=push_id,
             last_seen=job['last_seen'],
             job_id=job.get('job_id', ''),
+            url=job.get('url', ''),
         ) for job in jobs if (job['title'], job['company']) not in existing_jobs
     ]
     new_jobs = Job.objects.bulk_create(new_jobs)

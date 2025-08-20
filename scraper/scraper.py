@@ -49,7 +49,8 @@ def get_page_list() -> list[Page] | None:
                 selector=page['selector'],
                 response_type=page['response_type'],
                 title_key=page.get('title_key', ''),
-                job_id_key=page.get('job_id_key', '')
+                job_id_key=page.get('job_id_key', '') or '',
+                job_url_key=page.get('job_url_key', '') or ''
             ))
         return results
     else:
@@ -142,6 +143,7 @@ def push_jobs(jobs: list[Job], errors: list[ScrapeError], timestamp: str) -> boo
             },
             'last_seen': job.last_seen,
             'job_id': job.job_id,
+            'url': job.url,
         })
 
     for error in errors:

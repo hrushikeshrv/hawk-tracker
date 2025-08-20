@@ -2,6 +2,16 @@
 <body>
 Found {{ jobs|length }} new jobs.
 <table>
+    <thead>
+        <tr>
+            <td>Title</td>
+            <td>Company</td>
+            <td>Page</td>
+            <td>Page URL</td>
+            <td>Last Seen</td>
+            <td>First Seen</td>
+        </tr>
+    </thead>
     <tbody>
         {% for job in jobs %}
             <tr>
@@ -9,7 +19,8 @@ Found {{ jobs|length }} new jobs.
                 <td><a href="https://jobs.hrus.in{% url 'core:company_detail' job.company.id %}" class="block-link">{{ job.company }}</a></td>
                 <td><a href="https://jobs.hrus.in{% url 'core:page_detail' job.page.id %}" class="block-link">{{ job.page|truncatechars:30 }}</a></td>
                 <td><a href="{{ job.page.url }}" class="a flexbox-row aic" target="_blank"><span class="material-symbols-outlined" style="font-size: 1rem;">open_in_new</span>{{ job.page.url|truncatechars:30 }}</a></td>
-                <td>{{ job.last_seen|timesince }} ago</td>
+                <td data-tippy-content="{{ job.last_seen }} UTC">{{ job.last_seen|timesince }} ago</td>
+                <td data-tippy-content="{{ job.first_seen }} UTC">{{ job.first_seen|timesince }} ago</td>
             </tr>
         {% endfor %}
     </tbody>

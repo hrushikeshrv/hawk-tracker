@@ -54,8 +54,8 @@
                     <tr>
                         <td>{{ job.title }}</td>
                         <td>{{ job.job_id|default:"-" }}</td>
-                        <td>{{ job.last_seen|timesince }} ago</td>
-                        <td>{{ job.first_seen|timesince }} ago</td>
+                        <td data-tippy-content="{{ job.last_seen }} UTC">{{ job.last_seen|timesince }} ago</td>
+                        <td data-tippy-content="{{ job.first_seen }} UTC">{{ job.first_seen|timesince }} ago</td>
                     </tr>
                 {% empty %}
                     <tr>

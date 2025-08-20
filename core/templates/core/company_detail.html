@@ -12,7 +12,9 @@
                     <th>Title</th>
                     <th>Job ID</th>
                     <th>Last Seen</th>
+                    <th>First Seen</th>
                     <th>Page</th>
+                    <th>Apply</th>
                 </tr>
             </thead>
             <tbody>
@@ -20,8 +22,16 @@
                     <tr>
                         <td>{{ job.title }}</td>
                         <td>{{ job.job_id|default:"-" }}</td>
-                        <td>{{ job.last_seen|timesince }} ago</td>
+                        <td data-tippy-content="{{ job.last_seen }} UTC">{{ job.last_seen|timesince }} ago</td>
+                        <td data-tippy-content="{{ job.first_seen }} UTC">{{ job.first_seen|timesince }} ago</td>
                         <td><a href="{% url 'core:page_detail' job.page.id %}" class="a">Page</a></td>
+                        <td>
+                            {% if job.url %}
+                                <a href="{{ job.url }}" target="_blank" class="a">Apply</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>
