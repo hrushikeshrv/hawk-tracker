@@ -50,7 +50,7 @@
             <a href="?page={{ notifications.previous_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_left</span></a>
         {% endif %}
         <span class="space-lr">Page {{ notifications.number }} of {{ notifications.paginator.num_pages }}</span>
-        {% if pages.has_next %}
+        {% if notifications.has_next %}
             <a href="?page={{ notifications.next_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_right</span></a>
             <a href="?page={{ notifications.paginator.num_pages }}" class="pagination-navigation" style="padding: 1px 8px;">Last</a>
         {% endif %}

@@ -16,7 +16,7 @@ class HomepageView(View):
         if request.user.is_authenticated:
             watchlists = request.user.watchlists.annotate(page_count=Count('pages'))
             notifications = request.user.notifications.all()
-            paginator = Paginator(notifications, 30)  # Show 30 notifications per page
+            paginator = Paginator(notifications, 3)  # Show 3 notifications per page
             page_number = request.GET.get('page')
 
             try:
