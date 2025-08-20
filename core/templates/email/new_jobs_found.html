@@ -89,26 +89,12 @@
             <td>Title</td>
             <td>Company</td>
             <td>Page</td>
-            <td>Page URL</td>
             <td>Application URL</td>
+            <td>Source</td>
         </tr>
     </thead>
     <tbody>
-        {% for job in jobs %}
-            <tr>
-                <td>{{ job.title }}</td>
-                <td><a href="https://jobs.hrus.in{% url 'core:company_detail' job.company.id %}" class="block-link a">{{ job.company }}</a></td>
-                <td><a href="https://jobs.hrus.in{% url 'core:page_detail' job.page.id %}" class="block-link a">{{ job.page|truncatechars:30 }}</a></td>
-                <td><a href="{{ job.page.url }}" class="a flexbox-row aic" target="_blank">{{ job.page.url|truncatechars:30 }}</a></td>
-                <td>
-                    {% if job.url %}
-                        <a href="{{ job.url }}" target="_blank" class="a">Apply</a>
-                    {% else %}
-                        Not Found
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
+        {% include 'components/job_list.html' with jobs=notification.jobs.all show_company=True show_page=True is_email=True show_source=True %}
     </tbody>
 </table>
 </body>

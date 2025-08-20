@@ -1,0 +1,35 @@
+{% for job in jobs %}
+    <tr>
+        <td>{{ job.title }}</td>
+
+        {% if show_company %}
+            <td><a href="{% if is_email %}https://jobs.hrus.in{% endif %}{% url 'core:company_detail' job.company.id %}" class="block-link">{{ job.company }}</a></td>
+        {% endif %}
+
+        {% if show_page %}
+            <td style="text-wrap: nowrap;">
+                <a href="{% if is_email %}https://jobs.hrus.in{% endif %}{% url 'core:page_detail' job.page.id %}">{{ job.page|truncatechars:30 }}</a>
+            </td>
+        {% endif %}
+
+        {% if show_first_seen %}
+            <td data-tippy-content="{{ job.first_seen }} UTC">{{ job.first_seen|timesince }} ago</td>
+        {% endif %}
+
+        {% if show_last_seen %}
+            <td data-tippy-content="{{ job.last_seen }} UTC">{{ job.last_seen|timesince }} ago</td>
+        {% endif %}
+
+        <td>
+            {% if job.url %}
+                <a href="{{ job.url }}" target="_blank" class="a">Apply</a>
+            {% else %}
+                Not Found
+            {% endif %}
+        </td>
+
+        {% if show_source %}
+            <td><a href="{{ job.page.url }}" class="a" target="_blank">Careers page</a></td>
+        {% endif %}
+    </tr>
+{% endfor %}

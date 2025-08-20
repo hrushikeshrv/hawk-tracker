@@ -17,12 +17,14 @@ def create_jobs_and_notify(jobs, push_id) -> None:
     """
     # Figure out which jobs are new
     job_tuples = set((job['title'], job['company']) for job in jobs)
-    existing_jobs = Job.objects.filter(
+    existing_jobs_qs = Job.objects.filter(
         Q(
             title__in=[job[0] for job in job_tuples],
             company__name__in=[job[1] for job in job_tuples],
         )
-    ).distinct().values_list('title', 'company__name')
+    )
+    existing_jobs_qs.update(last_seen=datetime.now())
+    existing_jobs = existing_jobs_qs.distinct().values_list('title', 'company__name')
     # Bulk create new jobs
     new_jobs = [
         Job(

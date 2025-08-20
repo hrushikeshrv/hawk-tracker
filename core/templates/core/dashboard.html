@@ -19,21 +19,15 @@
                     <th>Name</th>
                     <th>Company</th>
                     <th>Page</th>
-                    <th>Link</th>
+                    <th>First Seen</th>
                     <th>Last Seen</th>
+                    <th>Apply</th>
+                    <th>Source</th>
                 </tr>
             </thead>
             <tbody id="notification-list">
                 {% for notification in notifications %}
-                    {% for job in notification.jobs.all %}
-                        <tr>
-                            <td>{{ job.title }}</td>
-                            <td><a href="{% url 'core:company_detail' job.company.id %}" class="block-link">{{ job.company }}</a></td>
-                            <td><a href="{% url 'core:page_detail' job.page.id %}" class="block-link">{{ job.page|truncatechars:30 }}</a></td>
-                            <td><a href="{{ job.page.url }}" class="a flexbox-row aic" target="_blank"><span class="material-symbols-outlined" style="font-size: 1rem;">open_in_new</span>{{ job.page.url|truncatechars:30 }}</a></td>
-                            <td data-tippy-content="{{ job.last_seen }} UTC">{{ job.last_seen|timesince }} ago</td>
-                        </tr>
-                    {% endfor %}
+                    {% include 'components/job_list.html' with jobs=notification.jobs.all show_company=True show_page=True show_first_seen=True show_last_seen=True is_email=False show_source=True %}
                 {% empty %}
                     <tr style="background-color: var(--background-color);">
                         <td colspan="4" style="text-align: center; padding-top: 10px;">No notifications yet. <a href="{% url 'core:watchlist_create' %}" class="a">Create a watchlist</a> or

@@ -9,33 +9,20 @@
         <table id="jobs-container">
             <thead>
                 <tr>
-                    <th>Title</th>
-                    <th>Job ID</th>
-                    <th>Last Seen</th>
-                    <th>First Seen</th>
+                    <th>Name</th>
                     <th>Page</th>
+                    <th>First Seen</th>
+                    <th>Last Seen</th>
                     <th>Apply</th>
+                    <th>Source</th>
                 </tr>
             </thead>
             <tbody>
+                {% include 'components/job_list.html' with jobs=pages show_page=True show_first_seen=True show_last_seen=True show_source=True %}
                 {% for job in pages %}
-                    <tr>
-                        <td>{{ job.title }}</td>
-                        <td>{{ job.job_id|default:"-" }}</td>
-                        <td data-tippy-content="{{ job.last_seen }} UTC">{{ job.last_seen|timesince }} ago</td>
-                        <td data-tippy-content="{{ job.first_seen }} UTC">{{ job.first_seen|timesince }} ago</td>
-                        <td><a href="{% url 'core:page_detail' job.page.id %}" class="a">Page</a></td>
-                        <td>
-                            {% if job.url %}
-                                <a href="{{ job.url }}" target="_blank" class="a">Apply</a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                    </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="4" style="text-align: center; background-color: var(--background-color);">No jobs found yet</td>
+                        <td colspan="6" style="text-align: center; background-color: var(--background-color);">No jobs found yet</td>
                     </tr>
                 {% endfor %}
             </tbody>
