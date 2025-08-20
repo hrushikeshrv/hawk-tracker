@@ -88,7 +88,7 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         jobs = recursive_getattr(response, page.selector.split(','), [])
         for job in jobs:
-            title = job.get(page.title_key or 'title', '').strip()
+            title = recursive_getattr(job, page.title_key.split(',')).strip()
             if title:
                 results.append(Job(
                     title=title,
@@ -96,7 +96,8 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
                     company_id=page.company_id,
                     page=page,
                     last_seen=timestamp,
-                    job_id=job.get(page.job_id_key or 'id', '')
+                    job_id=recursive_getattr(job, page.job_id_key.split(','), '').strip(),
+                    url=recursive_getattr(job, page.job_url_key.split(','), '')
                 ))
     else:
         soup = BeautifulSoup(request.content, 'html.parser')

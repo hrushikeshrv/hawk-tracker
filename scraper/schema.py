@@ -16,6 +16,7 @@ class Page:
     response_type: str = 'html'
     title_key: str = ''
     job_id_key: str = ''
+    job_url_key: str = ''
     api_url: str = ''
 
 
