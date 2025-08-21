@@ -1,2 +1,89 @@
 {% extends 'layout.html' %}
+
 {% block title %}Hawk Tracker{% endblock %}
+
+{% block body %}
+    <div class="hero">
+        <h1>Hawk Job Tracker</h1>
+        <p>
+            Track career pages for jobs and get instant notifications when new jobs are posted.
+        </p>
+        <div class="flexbox-row ajc center mbt-20">
+            <a href="{% url 'users:login' %}" style="margin: 0 10px;">
+                <button class="cta-button">Log In</button>
+            </a>
+            <a href="{% url 'users:register' %}" style="margin: 0 10px;">
+                <button class="cta-button">Sign Up</button>
+            </a>
+        </div>
+    </div>
+    <table id="notification-container" class="mt-30">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Page</th>
+            <th>First Seen</th>
+            <th>Last Seen</th>
+            <th>Apply</th>
+            <th>Source</th>
+        </tr>
+        </thead>
+        <tbody id="notification-list">
+        <tr>
+            <td>2026 Software Engineer Program - Full-time - United States (February Start)</td>
+            <td><a href="/companies/4" class="block-link">JP Morgan Chase</a></td>
+            <td style="text-wrap: nowrap;"><a href="/pages/4">JP Morgan SDE New Grad Roles</a></td>
+            <td>21&nbsp;hours, 14&nbsp;minutes ago</td>
+            <td>1&nbsp;day, 1&nbsp;hour ago</td>
+            <td><a class="a">Apply</a></td>
+            <td><a class="a">Careers page</a></td>
+        </tr>
+        <tr>
+            <td>Software Engineer: Microsoft AI Development Acceleration Program, Cambridge</td>
+            <td><a href="/companies/5" class="block-link">Microsoft</a></td>
+            <td style="text-wrap: nowrap;"><a href="/pages/5">Microsoft SDE New Grad Roles</a></td>
+            <td>21&nbsp;hours, 14&nbsp;minutes ago</td>
+            <td>1&nbsp;day, 1&nbsp;hour ago</td>
+            <td><a class="a">Apply</a></td>
+            <td><a class="a">Careers page</a></td>
+        </tr>
+        <tr>
+            <td>Software Engineer - AI/ML, Multiple Locations</td>
+            <td><a href="/companies/5" class="block-link">Microsoft</a></td>
+            <td style="text-wrap: nowrap;"><a href="/pages/5">Microsoft SDE New Grad Roles</a></td>
+            <td>21&nbsp;hours, 14&nbsp;minutes ago</td>
+            <td>1&nbsp;day, 1&nbsp;hour ago</td>
+            <td><a class="a">Apply</a></td>
+            <td><a class="a">Careers page</a></td>
+        </tr>
+        <tr>
+            <td>Software Engineer II – AI Platform Development (Azure PostgreSQL)</td>
+            <td><a href="/companies/5" class="block-link">Microsoft</a></td>
+            <td style="text-wrap: nowrap;"><a href="/pages/5">Microsoft SDE New Grad Roles</a></td>
+            <td>21&nbsp;hours, 14&nbsp;minutes ago</td>
+            <td>1&nbsp;day, 1&nbsp;hour ago</td>
+            <td><a class="a">Apply</a></td>
+            <td><a class="a">Careers page</a></td>
+        </tr>
+        <tr>
+            <td>Director, Revenue Strategy</td>
+            <td><a href="/companies/3" class="block-link">Salesforce</a></td>
+            <td style="text-wrap: nowrap;"><a href="/pages/3">Salesforce SDE New Grad Roles</a></td>
+            <td>1&nbsp;month ago</td>
+            <td>1&nbsp;month ago</td>
+            <td><a class="a">Apply</a></td>
+            <td><a class="a">Careers page</a></td>
+        </tr>
+        <tr>
+            <td>EMEA Payroll Analyst with Germany experience</td>
+            <td><a href="/companies/3" class="block-link">Salesforce</a></td>
+            <td style="text-wrap: nowrap;"><a href="/pages/3">Salesforce SDE New Grad Roles</a></td>
+            <td>1&nbsp;month ago</td>
+            <td>1&nbsp;month ago</td>
+            <td><a class="a">Apply</a></td>
+            <td><a class="a">Careers page</a></td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}

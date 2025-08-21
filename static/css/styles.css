@@ -887,3 +887,14 @@ footer nav {
 #watchlist-container td {
     text-align: center;
 }
+
+/*
+    index.html styles
+*/
+div.hero {
+    text-align: center;
+}
+
+div.hero h1 {
+    font-size: 3rem;
+}
