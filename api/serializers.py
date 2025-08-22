@@ -12,7 +12,7 @@ class PageSerializer(serializers.ModelSerializer):
             'id',
             'name', 'company', 'company_id', 'api_url', 'url', 'location', 'is_remote',
             'years_of_experience', 'level', 'selector', 'response_type', 'title_key', 'job_id_key',
-            'job_url_key'
+            'job_url_key', 'job_url_prefix',
         ]
 
 

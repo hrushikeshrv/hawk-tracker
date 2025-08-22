@@ -50,7 +50,8 @@ def get_page_list() -> list[Page] | None:
                 response_type=page['response_type'],
                 title_key=page.get('title_key', ''),
                 job_id_key=page.get('job_id_key', '') or '',
-                job_url_key=page.get('job_url_key', '') or ''
+                job_url_key=page.get('job_url_key', '') or '',
+                job_url_prefix=page.get('job_url_prefix', '') or '',
             ))
         return results
     else:
@@ -87,7 +88,10 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
     if page.response_type == 'json':
         response = request.json()
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        jobs = recursive_getattr(response, page.selector.split(','), [])
+        if page.selector == '':
+            jobs = response
+        else:
+            jobs = recursive_getattr(response, page.selector.split(','), [])
         for job in jobs:
             title = recursive_getattr(job, page.title_key.split(',')).strip()
             if title:
@@ -98,7 +102,7 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
                     page=page,
                     last_seen=timestamp,
                     job_id=recursive_getattr(job, page.job_id_key.split(','), '').strip(),
-                    url=recursive_getattr(job, page.job_url_key.split(','), '')
+                    url=page.job_url_prefix + recursive_getattr(job, page.job_url_key.split(','), '')
                 ))
     else:
         soup = BeautifulSoup(request.content, 'html.parser')
@@ -221,9 +225,24 @@ if __name__ == '__main__':
         type=str,
         required=False,
     )
+    parser.add_argument(
+        '--job-url-key', '-juk',
+        help='If the response type is JSON, this is the key that contains the job URL in a Job object in the JSON '
+             'response.',
+        type=str,
+        required=False,
+    )
+    parser.add_argument(
+        '--job-url-prefix', '-jup',
+        help='If the response type is JSON and the job URL extracted from the job object is a relative URL, this prefix will be '
+             'added to the job URL to make it absolute.',
+        type=str,
+        required=False,
+        default=''
+    )
     args = parser.parse_args()
     if args.t:
-        if not args.url or not args.selector:
+        if not args.url or (args.response_type == 'html' and not args.selector):
             print('Test mode requires --url and --selector arguments')
             exit(1)
         page = Page(
@@ -235,12 +254,14 @@ if __name__ == '__main__':
             selector=args.selector,
             response_type=args.response_type,
             title_key=args.title_key or '',
-            job_id_key=args.job_id_key or ''
+            job_id_key=args.job_id_key or '',
+            job_url_key=args.job_url_key or '',
+            job_url_prefix=args.job_url_prefix or '',
         )
         jobs, errors = scrape_page(page)
         print(f'Found {len(jobs)} jobs and {len(errors)} errors on {page.name}')
         for job in jobs:
-            print(f'Job: {job.title} at {job.company}')
+            print(f'Job: {job.title} at {job.company} - {job.url}')
         for error in errors:
             print(f'Error: {error.error} on page {error.page.name}')
     else:

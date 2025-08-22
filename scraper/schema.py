@@ -17,6 +17,7 @@ class Page:
     title_key: str = ''
     job_id_key: str = ''
     job_url_key: str = ''
+    job_url_prefix: str = ''
     api_url: str = ''
 
 
