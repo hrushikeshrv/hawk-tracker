@@ -48,4 +48,17 @@ class NotificationAdmin(admin.ModelAdmin):
         return str(obj)
 
 
-admin.site.register(Watchlist)
+class WatchlistAdminForm(forms.ModelForm):
+    pages = forms.ModelMultipleChoiceField(
+        queryset=Page.objects.all(),
+        widget=admin.widgets.FilteredSelectMultiple('Pages', is_stacked=False)
+    )
+
+    class Meta:
+        model = Watchlist
+        fields = '__all__'
+
+
+@admin.register(Watchlist)
+class WatchlistAdmin(admin.ModelAdmin):
+    form = WatchlistAdminForm
