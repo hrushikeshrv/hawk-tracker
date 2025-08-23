@@ -73,7 +73,7 @@ class Page(models.Model):
     ]
     name = models.CharField(max_length=50)
     api_url = models.URLField(blank=True, null=True, help_text='If the response type is JSON, this is the URL to the API endpoint that returns the list of jobs. If the response type is HTML, this field is not used.')
-    url = models.URLField()
+    url = models.URLField(max_length=512)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='pages')
     location = models.CharField(max_length=64, default='', null=True, blank=True)
     is_remote = models.BooleanField(default=False, blank=True, null=True)

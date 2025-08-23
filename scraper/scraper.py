@@ -94,6 +94,7 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
             page=page,
             error=f'Error: {request.status_code} for {url}'
         )])
+    # Response type is JSON
     if page.response_type == 'json':
         response = request.json()
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -113,6 +114,7 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
                     job_id=str(recursive_getattr(job, page.job_id_key.split(','), '')).strip(),
                     url=page.job_url_prefix + str(recursive_getattr(job, page.job_url_key.split(','), ''))
                 ))
+    # Response type is HTML
     else:
         soup = BeautifulSoup(request.content, 'html.parser')
         elements = soup.select(page.selector)
@@ -120,6 +122,14 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
 
         for element in elements:
             title = element.get_text(strip=True)
+            closest_a = element.find_parent('a')
+            if not closest_a and element.has_attr('href'):
+                closest_a = element
+            job_url = ''
+            if closest_a and closest_a.has_attr('href'):
+                job_url = closest_a['href']
+                if page.job_url_prefix:
+                    job_url = page.job_url_prefix + job_url
             if title:
                 results.append(Job(
                     title=title,
@@ -128,6 +138,7 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
                     page=page,
                     last_seen=timestamp,
                     job_id='',
+                    url=job_url,
                 ))
     return results, []
 
