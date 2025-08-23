@@ -14,6 +14,8 @@ class Page:
     url: str
     selector: str
     response_type: str = 'html'
+    request_method: str = 'GET'
+    request_payload: dict = None
     title_key: str = ''
     job_id_key: str = ''
     job_url_key: str = ''

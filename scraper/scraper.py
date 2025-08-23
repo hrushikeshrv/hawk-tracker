@@ -48,6 +48,8 @@ def get_page_list() -> list[Page] | None:
                 api_url=page['api_url'],
                 selector=page['selector'],
                 response_type=page['response_type'],
+                request_method=page['request_method'],
+                request_payload=page.get('request_payload', None),
                 title_key=page.get('title_key', ''),
                 job_id_key=page.get('job_id_key', '') or '',
                 job_url_key=page.get('job_url_key', '') or '',
@@ -78,7 +80,14 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
         "Sec-Fetch-Mode": "cors",
         "Sec-Fetch-Dest": "empty"
     }
-    request = requests.get(url, headers=headers)
+    if page.request_method == 'POST':
+        # Specifically for Uber's careers page, which sets the CSRF token to "x"
+        headers['x-csrf-token'] = 'x'
+        request = requests.post(url, headers=headers, json=page.request_payload)
+    elif page.request_method == 'PUT':
+        request = requests.put(url, headers=headers, json=page.request_payload)
+    else:
+        request = requests.get(url, headers=headers)
     if request.status_code != 200:
         print(f'Error: {request.status_code} for {url}')
         return ([], [ScrapeError(
@@ -101,8 +110,8 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
                     company_id=page.company_id,
                     page=page,
                     last_seen=timestamp,
-                    job_id=recursive_getattr(job, page.job_id_key.split(','), '').strip(),
-                    url=page.job_url_prefix + recursive_getattr(job, page.job_url_key.split(','), '')
+                    job_id=str(recursive_getattr(job, page.job_id_key.split(','), '')).strip(),
+                    url=page.job_url_prefix + str(recursive_getattr(job, page.job_url_key.split(','), ''))
                 ))
     else:
         soup = BeautifulSoup(request.content, 'html.parser')
@@ -240,6 +249,21 @@ if __name__ == '__main__':
         required=False,
         default=''
     )
+    parser.add_argument(
+        '--request-method', '-rm',
+        help='HTTP request method to use (GET, POST, or PUT)',
+        type=str,
+        choices=['GET', 'POST', 'PUT'],
+        required=False,
+        default="GET"
+    )
+    parser.add_argument(
+        '--request-payload', '-rp',
+        help='If the request method is POST or PUT, this is the payload that will be sent with the request (in JSON format)',
+        type=str,
+        required=False,
+        default=''
+    )
     args = parser.parse_args()
     if args.t:
         if not args.url or (args.response_type == 'html' and not args.selector):
@@ -253,6 +277,8 @@ if __name__ == '__main__':
             url=args.url,
             selector=args.selector,
             response_type=args.response_type,
+            request_method=args.request_method,
+            request_payload=args.request_payload or None,
             title_key=args.title_key or '',
             job_id_key=args.job_id_key or '',
             job_url_key=args.job_url_key or '',

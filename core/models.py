@@ -6,7 +6,7 @@ class Company(models.Model):
     class Meta:
         verbose_name_plural = "Companies"
 
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
 
     def __str__(self):
         return self.name
@@ -81,6 +81,8 @@ class Page(models.Model):
     level = models.CharField(max_length=10, choices=JOB_LEVELS, default='unspec', blank=True)
 
     response_type = models.CharField(max_length=10, choices=RESPONSE_TYPES, default='html', blank=True)
+    request_method = models.CharField(max_length=10, choices=[('GET', 'GET'), ('POST', 'POST'), ('PUT', 'PUT')], default='GET', blank=True)
+    request_payload = models.JSONField(blank=True, null=True, default=dict, help_text='If the request method is POST or PUT, this is the payload that will be sent with the request.')
     selector = models.CharField(max_length=128, help_text='If the response type is HTML, this is the CSS selector that selects all the job titles. If the response type is JSON, this is a comma-separated list of keys that would return the list of job titles from the JSON response.', blank=True, default="")
     title_key = models.CharField(max_length=32, help_text='If the response type is JSON, this is a comma-separated list of keys that would give the job title in a Job object in the JSON response.', blank=True, null=True)
     job_id_key = models.CharField(max_length=32, help_text='If the response type is JSON, this is a comma-separated list of keys that would give the job ID in a Job object in the JSON response.', blank=True, null=True)
