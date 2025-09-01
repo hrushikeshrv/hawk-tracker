@@ -697,6 +697,12 @@ h1, h2, h3 {
     width: 100%;
 }
 
+@media (max-width: 800px) {
+    .table-container {
+        padding: 20px;
+    }
+}
+
 p {
     margin: 10px 0;
     line-height: 1.7;
@@ -895,6 +901,26 @@ div.hero {
     text-align: center;
 }
 
+#cta-stats h1 {
+    margin: 0;
+    padding: 5px;
+    font-size: 5rem;
+    font-family: var(--monospace-font);
+}
+
+@media (max-width: 900px) {
+    #cta-stats h1 {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 500px) {
+    #cta-stats h1 {
+        font-size: 2rem;
+    }
+}
+
 div.hero h1 {
     font-size: 3rem;
+    padding: 0 10px;
 }

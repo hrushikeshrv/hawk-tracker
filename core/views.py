@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, reverse
 from django.views.generic import TemplateView, View, CreateView, ListView, DetailView
 
-from core.models import Watchlist, Page, Company
+from core.models import Watchlist, Page, Company, Job
 
 
 def test_view(request, *args, **kwargs):
@@ -30,7 +30,12 @@ class HomepageView(View):
                 'watchlists': watchlists,
                 'notifications': paginated_notifications,
             })
-        return render(request, 'core/index.html')
+        return render(request, 'core/index.html', {
+            'num_companies': Company.objects.count(),
+            'num_pages': Page.objects.count(),
+            'num_jobs': Job.objects.count(),
+            'recent_jobs': Job.objects.select_related('company').all()[:10],
+        })
 
 
 class CompanyDetailView(DetailView):
