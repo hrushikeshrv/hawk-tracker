@@ -38,6 +38,7 @@ class PushModelForm(forms.ModelForm):
 @admin.register(Push)
 class PushAdmin(admin.ModelAdmin):
     form = PushModelForm
+    list_display = ['time', 'n_jobs_found', 'n_errors']
 
 
 @admin.register(Notification)

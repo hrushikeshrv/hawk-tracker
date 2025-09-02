@@ -52,9 +52,11 @@ class Push(models.Model):
 
     time = models.DateTimeField(auto_now_add=True)
     data = models.JSONField()
+    n_jobs_found = models.IntegerField(default=0)
+    n_errors = models.IntegerField(default=0)
 
     def __str__(self):
-        return f'Push at {self.time.strftime("%d %b, %Y, %I:%M:%S %p")}'
+        return f'Push at {self.time.strftime("%d %b, %Y, %I:%M:%S %p")} UTC'
 
 
 class Page(models.Model):

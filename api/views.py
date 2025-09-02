@@ -26,6 +26,9 @@ class PushCreateView(APIView):
         serializer = PushSerializer(data=request.data)
         if serializer.is_valid():
             push = serializer.save()
+            push.n_jobs_found = push.data['n_jobs_found']
+            push.n_errors = push.data['n_errors']
+            push.save()
             # Delete old pushes if we have more than 1000 pushes
             total_pushes = Push.objects.count()
             if total_pushes > 1000:

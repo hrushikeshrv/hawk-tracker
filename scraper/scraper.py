@@ -151,7 +151,9 @@ def push_jobs(jobs: list[Job], errors: list[ScrapeError], timestamp: str) -> boo
     data = {
         'jobs': [],
         'timestamp': timestamp,
-        'errors': []
+        'errors': [],
+        'n_jobs_found': len(jobs),
+        'n_errors': len(errors),
     }
     for job in jobs:
         data['jobs'].append({

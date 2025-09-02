@@ -21,4 +21,4 @@ class PushSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Push
-        fields = ['time', 'data']
+        fields = ['time', 'data', 'n_jobs_found', 'n_errors']
