@@ -48,6 +48,7 @@ class Push(models.Model):
     """A push from the Lambda function about changed pages"""
     class Meta:
         verbose_name_plural = "Pushes"
+        ordering = ['-time']
 
     time = models.DateTimeField(auto_now_add=True)
     data = models.JSONField()

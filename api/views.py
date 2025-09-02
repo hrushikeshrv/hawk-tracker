@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 
 from api.serializers import PageSerializer, PushSerializer
-from core.models import Page, Watchlist
+from core.models import Page, Watchlist, Push
 from core.utils import create_jobs_and_notify
 
 
@@ -26,6 +26,12 @@ class PushCreateView(APIView):
         serializer = PushSerializer(data=request.data)
         if serializer.is_valid():
             push = serializer.save()
+            # Delete old pushes if we have more than 1000 pushes
+            total_pushes = Push.objects.count()
+            if total_pushes > 1000:
+                excess_pushes = total_pushes - 1000
+                old_pushes = Push.objects.order_by('time')[:excess_pushes]
+                old_pushes.delete()
             # TODO: turn this into a celery task and run asynchronously
             create_jobs_and_notify(serializer.data['data']['jobs'], push.id)
             return Response({}, status=status.HTTP_201_CREATED)
