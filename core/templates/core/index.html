@@ -2,6 +2,11 @@
 
 {% block title %}Hawk Tracker{% endblock %}
 
+{% block libraries %}
+    <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
+    <input type="hidden" name="recent-job-count-api-url" id="recent-job-count-api-url" value="{% url 'api:recent_job_count' %}">
+{% endblock %}
+
 {% block body %}
     <div class="hero">
         <h1>Hawk Job Tracker</h1>
@@ -39,6 +44,9 @@
             </a>
         </div>
     </div>
+
+    <div class="mbt-20 column-full center" id="recent-job-count-container"></div>
+
     <div class="table-container" style="margin: 20px 0 50px;">
         <table id="notification-container">
             <thead>
@@ -57,4 +65,38 @@
             </tbody>
         </table>
     </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        const recentJobsAPIURL = document.querySelector('#recent-job-count-api-url').value;
+        fetch(recentJobsAPIURL)
+            .then(res => res.json())
+            .then(data => {
+                data.type = 'scatter';
+                data.line = {color: '#F38904FF', shape: 'spline', smoothing: 1};
+                data.name = '';
+                data.hovertemplate = '%{y} jobs found';
+                data.hoverlabel = {font: {family: 'Poppins', size: 14, weight: 600}};
+                const layout = {
+                    title: 'Recent Jobs',
+                    margin: {left: 0, right: 0, top: 0, bottom: 0},
+                    padding: {left: 0, right: 0, top: 0, bottom: 0},
+                    plot_bgcolor: window.getComputedStyle(document.body).getPropertyValue('background-color'),
+                    paper_bgcolor: window.getComputedStyle(document.body).getPropertyValue('background-color'),
+                    font: {
+                        color: window.getComputedStyle(document.body).getPropertyValue('color'),
+                        family: 'Poppins',
+                    }
+                };
+                Plotly.newPlot(
+                    'recent-job-count-container',
+                    [data],
+                    layout,
+                    {
+                        displayModeBar: false,
+                    }
+                );
+            })
+    </script>
 {% endblock %}

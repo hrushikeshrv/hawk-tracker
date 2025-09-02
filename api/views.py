@@ -1,4 +1,7 @@
+import datetime
+
 from django.http import HttpResponse
+from django.db.models import Min
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -10,6 +13,28 @@ from core.utils import create_jobs_and_notify
 
 def test_view(request, *args, **kwargs):
     return HttpResponse("Test View")
+
+
+class RecentJobCountView(APIView):
+    def get(self, request):
+        ten_days_ago = datetime.datetime.now() - datetime.timedelta(days=10)
+        pushes = Push.objects.filter(time__gte=ten_days_ago).values('time__date').annotate(first_id=Min('id'))
+        recent_pushes = Push.objects.filter(id__in=[p['first_id'] for p in pushes])
+        n_jobs = []
+        dates = []
+        for push in recent_pushes:
+            if push.n_jobs_found > 0:
+                n_jobs.append(push.n_jobs_found)
+                dates.append(push.time.strftime("%Y-%m-%d %H:%M"))
+            else:
+                try:
+                    n_jobs.append(len(push.data['jobs']))
+                    dates.append(push.time.strftime("%Y-%m-%d %H:%M"))
+                except:
+                    pass
+        n_jobs.reverse()
+        dates.reverse()
+        return Response({"x": dates, "y": n_jobs}, status=status.HTTP_200_OK)
 
 
 class PageListView(APIView):
