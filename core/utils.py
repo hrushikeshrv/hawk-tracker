@@ -3,9 +3,12 @@ from django.core.mail import send_mail
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+import logging
 
 from core.models import Job, Notification
 from users.models import User
+
+logger = logging.getLogger('django')
 
 
 def create_jobs_and_notify(jobs, push_id) -> None:
@@ -37,6 +40,7 @@ def create_jobs_and_notify(jobs, push_id) -> None:
             url=job.get('url', ''),
         ) for job in jobs if (job['title'], job['company']) not in existing_jobs
     ]
+    logger.info(f"Found {len(new_jobs)} new jobs")
     new_jobs = Job.objects.bulk_create(new_jobs)
 
     # A dictionary mapping a user's email to a list of new jobs
@@ -50,7 +54,7 @@ def create_jobs_and_notify(jobs, push_id) -> None:
                 if user.pk not in notification_data:
                     notification_data[user.pk] = (user, [])
                 notification_data[user.pk][1].append(job)
-
+    logger.info(f'Notifying {len(notification_data)} users')
     notify_users(notification_data)
 
 
@@ -62,6 +66,7 @@ def notify_users(notification_data: dict[str, tuple[User, list[Job]]]) -> None:
     """
     for user_pk in notification_data:
         user = notification_data[user_pk][0]
+        logger.info(f"Notifying {user.username} about {len(notification_data[user_pk][1])} new jobs")
         notification = Notification.objects.create(
             user=user,
             n_new_jobs=len(notification_data[user_pk][1]),

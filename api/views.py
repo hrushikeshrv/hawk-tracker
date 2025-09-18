@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from django.http import HttpResponse
 from django.db.models import Min
@@ -9,6 +10,8 @@ from rest_framework.views import APIView
 from api.serializers import PageSerializer, PushSerializer
 from core.models import Page, Watchlist, Push
 from core.utils import create_jobs_and_notify
+
+logger = logging.getLogger('django')
 
 
 def test_view(request, *args, **kwargs):
@@ -56,10 +59,12 @@ class PushCreateView(APIView):
             push.save()
             # Delete old pushes if we have more than 3000 pushes
             total_pushes = Push.objects.count()
+            logger.info("Total pushes found: {}".format(total_pushes))
             if total_pushes > 3000:
                 excess_pushes = total_pushes - 3000
                 old_pushes = Push.objects.order_by('time')[:excess_pushes]
                 old_pushes.delete()
+                logger.info(f"Deleting {excess_pushes} pushes")
             # TODO: turn this into a celery task and run asynchronously
             create_jobs_and_notify(serializer.data['data']['jobs'], push.id)
             return Response({}, status=status.HTTP_201_CREATED)
