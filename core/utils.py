@@ -50,7 +50,9 @@ def create_jobs_and_notify(jobs, push_id) -> None:
     for job in new_jobs:
         watchlists = job.page.watchlists.all().prefetch_related('subscribers')
         for watchlist in watchlists:
+            logger.info(f"Watchlist {watchlist.name} has new jobs!")
             for user in watchlist.subscribers.all():
+                logger.info(f"{user.username} should be notified")
                 if user.pk not in notification_data:
                     notification_data[user.pk] = (user, [])
                 notification_data[user.pk][1].append(job)
