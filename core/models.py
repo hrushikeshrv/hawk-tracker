@@ -19,7 +19,7 @@ class Job(models.Model):
 
     title = models.CharField(max_length=200)
     url = models.URLField(blank=True, null=True, help_text='URL of the job posting, if available')
-    push = models.ForeignKey('Push', on_delete=models.CASCADE, related_name='jobs')
+    push = models.ForeignKey('Push', on_delete=models.SET_NULL, related_name='jobs', null=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='jobs')
     page = models.ForeignKey('Page', on_delete=models.CASCADE, related_name='jobs')
     first_seen = models.DateTimeField(auto_now_add=True)
