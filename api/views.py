@@ -1,8 +1,10 @@
+import boto3
 import datetime
 import logging
 
 from django.http import HttpResponse
 from django.db.models import Min
+import json
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -41,11 +43,37 @@ class RecentJobCountView(APIView):
 
 
 class PageListView(APIView):
+    """
+    When a request comes in to this endpoint, push all pages we have
+    into the SQS queue
+    """
+    def chunked(self, iterable, size):
+        """
+        Yield successive chunks from iterable of length `size`.
+        """
+        for i in range(0, len(iterable), size):
+            yield iterable[i:i + size]
+
     def get(self, request):
-        # TODO: If required, add request origin verification here
+        # TODO: If required, add request origin verification here.
+        #       Give the Lambda function an API key
         pages = Page.objects.all()
         serializer = PageSerializer(pages, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        sqs = boto3.client("sqs", region_name='ap-south-1')
+        queue_url = 'https://sqs.ap-south-1.amazonaws.com/151345839462/HawkTrackerQueue'
+
+        data = serializer.data
+        n_pages = 0
+        n_messages = 0
+        for chunk in self.chunked(data, 10):
+            sqs.send_message(
+                QueueUrl=queue_url,
+                MessageBody=json.dumps(chunk),
+            )
+            n_messages += 1
+            n_pages += len(chunk)
+
+        return Response({'status': 'success', 'page_count': n_pages, 'message_count': n_messages}, status=status.HTTP_200_OK)
 
 
 class PushCreateView(APIView):
