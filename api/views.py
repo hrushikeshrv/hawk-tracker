@@ -59,12 +59,11 @@ class PushCreateView(APIView):
             push.save()
             # Delete old pushes if we have more than 3000 pushes
             total_pushes = Push.objects.count()
-            logger.info("Total pushes found: {}".format(total_pushes))
             if total_pushes > 3000:
-                excess_pushes = total_pushes - 3000
-                old_pushes = Push.objects.order_by('time')[:excess_pushes]
-                old_pushes.delete()
-                logger.info(f"Deleting {excess_pushes} pushes")
+                logger.info("Total pushes found: {}".format(total_pushes))
+                last_push = Push.objects.last()
+                logger.info(f"Deleting last push {last_push}")
+                last_push.delete()
             # TODO: turn this into a celery task and run asynchronously
             create_jobs_and_notify(serializer.data['data']['jobs'], push.id)
             return Response({}, status=status.HTTP_201_CREATED)
