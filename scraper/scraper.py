@@ -1,9 +1,12 @@
 """
-Scraper script to be deployed on AWS Lambda.
+Scraper script that reads messages from the SQS queue,
+scrapes the pages in the messages, and POSTs found jobs
+back to the server.
 """
 from argparse import ArgumentParser
 from bs4 import BeautifulSoup
 from datetime import datetime
+import json
 import os
 import requests
 
@@ -32,7 +35,8 @@ def recursive_getattr(obj: dict, attr_list: list[str], default=None):
 
 def get_page_list() -> list[Page] | None:
     """
-    Get the list of pages to scrape from the Django server
+    Get the list of pages to scrape from the Django server. Used only in test mode.
+    In production the list of pages is received from SQS.
     """
     url = SERVER_URL + '/api/pages/list'
     request = requests.get(url)
@@ -82,7 +86,8 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
     }
     if page.request_method == 'POST':
         # Specifically for Uber's careers page, which sets the CSRF token to "x"
-        headers['x-csrf-token'] = 'x'
+        if page.company == 'Uber':
+            headers['x-csrf-token'] = 'x'
         request = requests.post(url, headers=headers, json=page.request_payload)
     elif page.request_method == 'PUT':
         request = requests.put(url, headers=headers, json=page.request_payload)
@@ -143,17 +148,23 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
     return results, []
 
 
-def push_jobs(jobs: list[Job], errors: list[ScrapeError], timestamp: str) -> bool:
+def push_jobs(jobs: list[Job], errors: list[ScrapeError], timestamp: str, push_id: int = -1) -> bool:
     """
     Push scraped jobs to the server
     """
-    url = SERVER_URL + '/api/push/create'
+    # If we are testing locally, create a new push
+    if not is_lambda:
+        url = SERVER_URL + '/api/push/create'
+    # Otherwise, update an existing push
+    else:
+        url = SERVER_URL + '/api/push/update'
     data = {
         'jobs': [],
         'timestamp': timestamp,
         'errors': [],
         'n_jobs_found': len(jobs),
         'n_errors': len(errors),
+        'push_id': push_id,
     }
     for job in jobs:
         data['jobs'].append({
@@ -182,7 +193,7 @@ def push_jobs(jobs: list[Job], errors: list[ScrapeError], timestamp: str) -> boo
             },
             'error': error.error,
         })
-    request = requests.post(url, json={'time': timestamp, 'data': data})
+    request = requests.post(url, json={'time': timestamp, 'data': data}, headers={'X-API-Key': os.environ.get('HAWK_API_KEY')})
     return request.status_code == 200
 
 
@@ -191,7 +202,18 @@ def lambda_handler(event, context):
     Get pages to scrape from the server, scrape those pages,
     and push scraped job data back to the server
     """
-    pages = get_page_list()
+    push_id = -1
+    if not is_lambda:
+        pages = get_page_list()
+    else:
+        pages = []
+        for record in event['Records']:
+            try:
+                data = json.loads(record['body'])
+                pages.extend(json.loads(data['data']))
+                push_id = data['push_id']
+            except json.JSONDecodeError:
+                print(f'Invalid JSON body: {record["body"]}')
     results = []
     errors = []
     if pages:
@@ -201,7 +223,7 @@ def lambda_handler(event, context):
             results.extend(res)
             errors.extend(err)
             print(f'Found {len(res)} jobs and {len(err)} errors on {page.name}\n')
-    push_jobs(results, errors, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    push_jobs(results, errors, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), push_id)
 
 
 if __name__ == '__main__':

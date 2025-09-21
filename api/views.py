@@ -3,6 +3,7 @@ import datetime
 import logging
 
 from django.http import HttpResponse
+from django.conf import settings
 from django.db.models import Min
 import json
 from rest_framework.response import Response
@@ -55,20 +56,29 @@ class PageListView(APIView):
             yield iterable[i:i + size]
 
     def get(self, request):
-        # TODO: If required, add request origin verification here.
-        #       Give the Lambda function an API key
         pages = Page.objects.all()
         serializer = PageSerializer(pages, many=True)
+        # In debug mode, just return the pages here, don't push to SQS
+        if settings.DEBUG:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        api_key = request.headers.get('X-API-Key')
+        if api_key != settings.HAWK_API_KEY:
+            return Response({"status": "error", "cause": "Invalid API key"}, status=status.HTTP_403_FORBIDDEN)
+
         sqs = boto3.client("sqs", region_name='ap-south-1')
         queue_url = 'https://sqs.ap-south-1.amazonaws.com/151345839462/HawkTrackerQueue'
 
         data = serializer.data
         n_pages = 0
         n_messages = 0
+        # An empty Push object. Jobs found from this SQS message should be
+        # associated with this Push object.
+        push = Push.objects.create()
         for chunk in self.chunked(data, 10):
             sqs.send_message(
                 QueueUrl=queue_url,
-                MessageBody=json.dumps(chunk),
+                MessageBody=json.dumps({'data': chunk, 'push_id': push.id}),
             )
             n_messages += 1
             n_pages += len(chunk)
@@ -78,7 +88,10 @@ class PageListView(APIView):
 
 class PushCreateView(APIView):
     def post(self, request):
-        # TODO: If required, add request origin verification here
+        # Note: This view does not require request origin verification
+        # because this view is only called during testing. The production
+        # Lambda function sends requests to the PushUpdateView to update
+        # and existing Push object and not create a new Push.
         serializer = PushSerializer(data=request.data)
         if serializer.is_valid():
             push = serializer.save()
@@ -96,6 +109,21 @@ class PushCreateView(APIView):
             create_jobs_and_notify(serializer.data['data']['jobs'], push.id)
             return Response({}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PushUpdateView(APIView):
+    def post(self, request):
+        data = request.data.get('data')
+        if not data:
+            logger.warning(f"Received Push with no data. Got the following body: {request.data}")
+            return Response({}, status=status.HTTP_400_BAD_REQUEST)
+        push = Push.objects.get(id=data['push_id'])
+        push.data['jobs'].extend(data['jobs'])
+        push.data['errors'].extend(data['errors'])
+        push.n_jobs_found += len(data['jobs'])
+        push.n_errors += len(data['errors'])
+        push.save()
+        return Response({}, status=status.HTTP_200_OK)
 
 
 class SubscribeToWatchlistView(APIView):
