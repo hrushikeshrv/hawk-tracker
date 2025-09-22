@@ -33,35 +33,39 @@ def recursive_getattr(obj: dict, attr_list: list[str], default=None):
     return obj
 
 
-def get_page_list() -> list[Page] | None:
+def get_page_list(page_list: list[dict] | None = None) -> list[Page]:
     """
     Get the list of pages to scrape from the Django server. Used only in test mode.
     In production the list of pages is received from SQS.
     """
-    url = SERVER_URL + '/api/pages/list'
-    request = requests.get(url)
-    if request.status_code == 200:
-        results = []
-        for page in request.json():
-            results.append(Page(
-                name=page['name'],
-                company=page['company'],
-                company_id=page['company_id'],
-                id=page['id'],
-                url=page['url'],
-                api_url=page['api_url'],
-                selector=page['selector'],
-                response_type=page['response_type'],
-                request_method=page['request_method'],
-                request_payload=page.get('request_payload', None),
-                title_key=page.get('title_key', ''),
-                job_id_key=page.get('job_id_key', '') or '',
-                job_url_key=page.get('job_url_key', '') or '',
-                job_url_prefix=page.get('job_url_prefix', '') or '',
-            ))
-        return results
+    results = []
+    if page_list is None:
+        url = SERVER_URL + '/api/pages/list'
+        request = requests.get(url)
+        if request.status_code == 200:
+            data = request.json()
+        else:
+            data = []
     else:
-        return None
+        data = page_list
+    for page in data:
+        results.append(Page(
+            name=page['name'],
+            company=page['company'],
+            company_id=page['company_id'],
+            id=page['id'],
+            url=page['url'],
+            api_url=page['api_url'],
+            selector=page['selector'],
+            response_type=page['response_type'],
+            request_method=page['request_method'],
+            request_payload=page.get('request_payload', {}),
+            title_key=page.get('title_key', ''),
+            job_id_key=page.get('job_id_key', '') or '',
+            job_url_key=page.get('job_url_key', '') or '',
+            job_url_prefix=page.get('job_url_prefix', '') or '',
+        ))
+    return results
 
 
 def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
@@ -210,7 +214,7 @@ def lambda_handler(event, context):
         for record in event['Records']:
             try:
                 data = json.loads(record['body'])
-                pages.extend(json.loads(data['data']))
+                pages.extend(get_page_list(data))
                 push_id = data['push_id']
             except json.JSONDecodeError:
                 print(f'Invalid JSON body: {record["body"]}')
