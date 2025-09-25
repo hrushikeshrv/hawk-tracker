@@ -113,13 +113,13 @@ class PushCreateView(APIView):
 
 class PushUpdateView(APIView):
     def post(self, request):
-        data = request.data.get('data')
+        data = request.data.get('data', {'data': {}})['data']
         if not data:
             logger.warning(f"Received Push with no data. Got the following body: {request.data}")
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
         push = Push.objects.get(id=data['push_id'])
-        if push.data is None:
-            push.data = {'jobs': [], 'errors': []}
+        if push.data is None or not isinstance(push.data, dict):
+            push.data = {'jobs': [], 'errors': [], 'n_errors': 0, 'n_jobs_found': 0, 'timestamp': str(data['timestamp'])}
         if 'jobs' not in push.data:
             push.data['jobs'] = []
         if 'errors' not in push.data:
@@ -129,6 +129,8 @@ class PushUpdateView(APIView):
         push.n_jobs_found += len(data['jobs'])
         push.n_errors += len(data['errors'])
         push.save()
+        logger.info(f"Push {push.id} updated. Creating new jobs and notifying users.")
+        create_jobs_and_notify(push.data['jobs'], push.id)
         return Response({}, status=status.HTTP_200_OK)
 
 
