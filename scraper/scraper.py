@@ -214,7 +214,7 @@ def lambda_handler(event, context):
         for record in event['Records']:
             try:
                 data = json.loads(record['body'])
-                pages.extend(get_page_list(data))
+                pages.extend(get_page_list(data['data']))
                 push_id = data['push_id']
             except json.JSONDecodeError:
                 print(f'Invalid JSON body: {record["body"]}')
