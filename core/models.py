@@ -51,7 +51,7 @@ class Push(models.Model):
         ordering = ['-time']
 
     time = models.DateTimeField(auto_now_add=True)
-    data = models.JSONField()
+    data = models.JSONField(null=True, blank=True)
     n_jobs_found = models.IntegerField(default=0)
     n_errors = models.IntegerField(default=0)
 
