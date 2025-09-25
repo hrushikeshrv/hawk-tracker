@@ -118,6 +118,12 @@ class PushUpdateView(APIView):
             logger.warning(f"Received Push with no data. Got the following body: {request.data}")
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
         push = Push.objects.get(id=data['push_id'])
+        if push.data is None:
+            push.data = {'jobs': [], 'errors': []}
+        if 'jobs' not in push.data:
+            push.data['jobs'] = []
+        if 'errors' not in push.data:
+            push.data['errors'] = []
         push.data['jobs'].extend(data['jobs'])
         push.data['errors'].extend(data['errors'])
         push.n_jobs_found += len(data['jobs'])
