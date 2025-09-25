@@ -113,7 +113,9 @@ class PushCreateView(APIView):
 
 class PushUpdateView(APIView):
     def post(self, request):
-        data = request.data.get('data', {'data': {}})['data']
+        data = request.data.get('data', {'data': {}})
+        logger.info(f"Received Push update with data: {data}")
+        data = data['data']
         if not data:
             logger.warning(f"Received Push with no data. Got the following body: {request.data}")
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
