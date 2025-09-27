@@ -93,7 +93,7 @@ html.dark-theme {
     --font-color: rgb(234, 234, 234);
     --inverse-font-color: rgb(0, 0, 0);
     --light-font-color: rgb(28, 28, 28);
-    --muted-font: rgb(188, 188, 188);
+    --muted-font: rgb(169, 169, 169);
     --light-muted-font: rgb(107, 107, 107);
 
     --primary-dark-3: rgb(245, 203, 166);
@@ -159,6 +159,10 @@ a.a {
     border-bottom: 2px solid var(--primary);
 }
 
+a.muted-link {
+    color: var(--muted-font);
+}
+
 .icon-tabler {
     stroke: var(--font-color);
 }
@@ -212,9 +216,21 @@ input, textarea {
     border-radius: 4px;
 }
 
+html.light-theme input, html.light-theme textarea {
+    background-color: var(--background-light-2);
+    border-color: var(--background-dark-1);
+}
+
 input:hover, input:focus, textarea:hover, textarea:focus {
     background-color: var(--background-dark-2);
     border-color: var(--background-dark-1);
+}
+
+html.light-theme input:hover,
+html.light-theme textarea:hover,
+html.light-theme input:focus,
+html.light-theme textarea:hover {
+    border-color: var(--background-dark-2);
 }
 
 code {
@@ -409,6 +425,14 @@ a.button-link:active {
 
 .space-lr {
     margin-left: 5px;
+    margin-right: 5px;
+}
+
+.space-l {
+    margin-left: 5px;
+}
+
+.space-r {
     margin-right: 5px;
 }
 
@@ -855,6 +879,45 @@ footer nav {
 
 .nav-link {
     margin: 0 10px;
+}
+
+#search-bar-container {
+    width: min(75%, 600px);
+}
+
+#search-results-container {
+    flex-grow: 1;
+    position: relative;
+}
+
+#search-bar {
+    border-radius: 50px;
+}
+
+#search-results {
+    position: absolute;
+    top: 111%;
+    left: 0;
+    right: 0;
+    background-color: var(--background-dark-1);
+    border-radius: 10px;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.search-result-item {
+    padding: 5px;
+    border-radius: 5px;
+    background-color: var(--background-dark-1);
+    margin-top: 10px;
+}
+
+.search-result-item:hover {
+    background-color: var(--background-dark-3);
+}
+
+.search-result-item .aux-links a {
+    margin-right: 20px;
 }
 
 .pagination-navigation {

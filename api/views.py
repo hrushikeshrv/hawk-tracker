@@ -10,8 +10,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
-from api.serializers import PageSerializer, PushSerializer
-from core.models import Page, Watchlist, Push
+from api.serializers import PageSerializer, PushSerializer, PageSearchSerializer, JobSerializer, CompanySerializer
+from core.models import Page, Watchlist, Push, Company, Job
 from core.utils import create_jobs_and_notify
 
 logger = logging.getLogger('django')
@@ -19,6 +19,24 @@ logger = logging.getLogger('django')
 
 def test_view(request, *args, **kwargs):
     return HttpResponse("Test View")
+
+
+class SearchObjectsView(APIView):
+    def get(self, request):
+        query = request.GET.get('q', '')
+        if not query:
+            return Response({"error": "Query parameter 'q' is required."}, status=status.HTTP_400_BAD_REQUEST)
+        companies = Company.objects.filter(name__icontains=query)[:10]
+        company_serializer = CompanySerializer(companies, many=True, context={'request': request})
+        pages = Page.objects.filter(name__icontains=query)[:10]
+        page_serializer = PageSearchSerializer(pages, many=True, context={'request': request})
+        jobs = Job.objects.filter(title__icontains=query).select_related('company', 'page')[:10]
+        job_serializer = JobSerializer(jobs, many=True, context={'request': request})
+        return Response({
+            "pages": page_serializer.data,
+            "companies": company_serializer.data,
+            "jobs": job_serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 class RecentJobCountView(APIView):

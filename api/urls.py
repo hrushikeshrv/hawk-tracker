@@ -2,6 +2,7 @@ from django.urls import path
 
 from api.views import (
     test_view,
+    SearchObjectsView,
     PageListView,
     PushCreateView,
     PushUpdateView,
@@ -12,6 +13,7 @@ from api.views import (
 app_name = 'api'
 
 urlpatterns = [
+    path('search', SearchObjectsView.as_view(), name='search'),
     path('recent-job-count', RecentJobCountView.as_view(), name='recent_job_count'),
     path('pages/list', PageListView.as_view(), name='page-list'),
     path('push/create', PushCreateView.as_view(), name='push-create'),

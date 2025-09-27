@@ -4,10 +4,18 @@
         <a href="{% url 'core:index' %}" class="flexbox-row ajc">
             <span class="material-symbols-outlined" style="font-size:2rem;">raven</span>
         </a>
+        <div class="flexbox-row ajc" id="search-bar-container">
+            <input type="hidden" name="search-api-url" id="search-api-url" value="{% url 'api:search' %}">
+            <label for="search-bar" class="material-symbols-outlined" style="margin-right: 10px;">search</label>
+            <div id="search-results-container" class="flexbox-column">
+                <input type="search" name="search-bar" id="search-bar" placeholder="Search for jobs, pages, or companies">
+                <div id="search-results" class="hidden flexbox-column" style="padding: 10px 20px;"></div>
+            </div>
+        </div>
         <div class="flexbox-row ajc">
+            <a href="{% url 'core:page_list' %}" class="nav-link">Pages</a>
+            <a href="{% url 'core:company_list' %}" class="nav-link">Companies</a>
             {% if request.user.is_authenticated %}
-                <a href="{% url 'core:page_list' %}" class="nav-link">Pages</a>
-                <a href="{% url 'core:company_list' %}" class="nav-link">Companies</a>
                 <form action="{% url 'users:logout' %}" method="POST">
                     {% csrf_token %}
                     <button class="nav-link" style="font-size: 1rem; cursor: pointer;">Logout</button>
