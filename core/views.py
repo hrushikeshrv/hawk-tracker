@@ -65,6 +65,17 @@ class CompanyDetailView(DetailView):
         return context
 
 
+class CompanyListView(ListView):
+    model = Company
+    template_name = 'core/company_list.html'
+    context_object_name = 'companies'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = super().get_queryset().annotate(job_count=Count('jobs', distinct=True), page_count=Count('pages', distinct=True)).prefetch_related('jobs', 'pages')
+        return queryset
+
+
 class PageDetailView(DetailView):
     model = Page
     template_name = 'core/page_detail.html'
@@ -90,6 +101,17 @@ class PageDetailView(DetailView):
 
         context['pages'] = paginated_pages
         return context
+
+
+class PageListView(ListView):
+    model = Page
+    template_name = 'core/page_list.html'
+    context_object_name = 'pages'
+    paginate_by = 30
+
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related('company').prefetch_related('jobs').annotate(job_count=Count('jobs', distinct=True))
+        return queryset
 
 
 class WatchlistCreateView(CreateView):

@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Tracked Companies{% endblock %}
+
+{% block body %}
+    <h1 class="mb-10">Tracked Companies</h1>
+    <div class="table-container">
+        <table id="company-container">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Pages</th>
+                    <th>Jobs</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for company in companies %}
+                    <tr>
+                    <td><a href="{% url 'core:company_detail' company.id %}" class="block-link">{{ company.name }}</a></td>
+                    <td style="text-align: center;">{{ company.page_count }}</td>
+                    <td style="text-align: center;">{{ company.job_count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <span class="mbt-10"></span>
+    <div class="pagination flexbox-row aic">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="pagination-navigation" style="padding: 1px 8px;">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_left</span></a>
+        {% endif %}
+        <span class="space-lr">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-navigation"><span class="material-symbols-outlined">chevron_right</span></a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-navigation" style="padding: 1px 8px;">Last</a>
+        {% endif %}
+    </div>
+{% endblock %}
