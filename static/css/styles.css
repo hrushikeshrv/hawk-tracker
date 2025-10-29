@@ -881,20 +881,20 @@ footer nav {
     margin: 0 10px;
 }
 
-#search-bar-container {
+#search-bar-container, .search-bar-container {
     width: min(75%, 600px);
 }
 
-#search-results-container {
+#search-results-container, .search-results-container {
     flex-grow: 1;
     position: relative;
 }
 
-#search-bar {
+#search-bar, .search-bar {
     border-radius: 50px;
 }
 
-#search-results {
+#search-results, .search-results {
     position: absolute;
     top: 111%;
     left: 0;
@@ -906,6 +906,7 @@ footer nav {
     max-height: 75svh;
     flex-wrap: nowrap;
     overflow: auto;
+    padding: 10px 20px;
 }
 
 .search-result-item {
@@ -989,4 +990,11 @@ div.hero {
 div.hero h1 {
     font-size: 3rem;
     padding: 0 10px;
+}
+
+/*
+    watchlist_detail.html styles
+*/
+.remove-page-button {
+    cursor: pointer;
 }

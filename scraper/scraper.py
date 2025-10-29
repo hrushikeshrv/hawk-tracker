@@ -92,11 +92,29 @@ def scrape_page(page: Page) -> tuple[list[Job], list[ScrapeError]]:
         # Specifically for Uber's careers page, which sets the CSRF token to "x"
         if page.company == 'Uber':
             headers['x-csrf-token'] = 'x'
-        request = requests.post(url, headers=headers, json=page.request_payload)
+        try:
+            request = requests.post(url, headers=headers, json=page.request_payload)
+        except ConnectionError:
+            return ([], [ScrapeError(
+                page=page,
+                error=f'ConnectionError for {url}'
+            )])
     elif page.request_method == 'PUT':
-        request = requests.put(url, headers=headers, json=page.request_payload)
+        try:
+            request = requests.put(url, headers=headers, json=page.request_payload)
+        except ConnectionError:
+            return ([], [ScrapeError(
+                page=page,
+                error=f'ConnectionError for {url}'
+            )])
     else:
-        request = requests.get(url, headers=headers)
+        try:
+            request = requests.get(url, headers=headers)
+        except ConnectionError:
+            return ([], [ScrapeError(
+                page=page,
+                error=f'ConnectionError for {url}'
+            )])
     if request.status_code != 200:
         print(f'Error: {request.status_code} for {url}')
         return ([], [ScrapeError(

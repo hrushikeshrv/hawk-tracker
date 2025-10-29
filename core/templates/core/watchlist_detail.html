@@ -10,7 +10,6 @@
 {% block body %}
     <div class="flexbox-row jcsb aic">
         <h1 class="mb-10">{{ watchlist.name }}</h1>
-        <a href="" class="material-symbols-outlined button">edit</a>
     </div>
     <div class="mb-10 flexbox-column">
         <strong>Created by {{ watchlist.owner.username }}</strong>
@@ -19,6 +18,15 @@
         {% endwith %}
         <p>{{ watchlist.description }}</p>
     </div>
+    <div class="flexbox-row pad-10 aic jcfs">
+        <label for="search-pages" class="material-symbols-outlined" style="margin-right: 10px;">search</label>
+        <div class="search-results-container flexbox-column">
+            <input type="search" name="search-pages" id="search-pages" class="search-bar" placeholder="Search for pages">
+            <div class=" hidden search-results flexbox-column">
+
+            </div>
+        </div>
+    </div>
     <div class="table-container">
         <table id="watchlist-detail-container">
             <thead>
@@ -26,6 +34,7 @@
                     <th>Page</th>
                     <th>Company</th>
                     <th>URL</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody id="watchlist-detail-list">
@@ -34,6 +43,7 @@
                         <td><a href="{% url 'core:page_detail' page.id %}" style="display: block;">{{ page.name }}</a></td>
                         <td><a href="{% url 'core:company_detail' page.company.id %}" class="block-link">{{ page.company.name }}</a></td>
                         <td class="flexbox-row jcfs"><a href="{{ page.url }}" class="a flexbox-row aic" target="_blank"><span class="material-symbols-outlined" style="font-size: 1rem;">open_in_new</span>{{ page.url|truncatechars:30 }}</a></td>
+                        <td style="text-align: center; vertical-align: middle;"><span class="material-symbols-outlined center remove-page-button" data-tippy-content="Remove page from watchlist">close</span></td>
                     </tr>
                 {% empty %}
                     <tr style="background-color: var(--background-color);">
